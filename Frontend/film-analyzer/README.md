@@ -1,6 +1,16 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+
+## Step 1: cd into the Frontend/film-analyzer to install dependencies
+```
+    cd Frontend
+    cd film-analyzer
+    npm install
+```
+
+## Step 2: Ask Mahathir for clerk access keys. Create a .env.local file withint film-analyzer, and place public and secret key in there
+
+## Step 3 Running Code
 
 First, run the development server:
 

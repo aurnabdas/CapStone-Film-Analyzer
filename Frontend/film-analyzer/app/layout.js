@@ -1,3 +1,4 @@
+'use client'
 import {
   ClerkProvider,
   SignInButton,
@@ -6,6 +7,8 @@ import {
   UserButton
 } from '@clerk/nextjs';
 import './globals.css';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 export default function RootLayout({ children }) {
   return (
@@ -18,7 +21,11 @@ export default function RootLayout({ children }) {
           <SignedIn>
             <UserButton />
           </SignedIn>
-          {children}
+
+          <Provider store={store}>
+            {children}
+          </Provider>
+              
         </body>
       </html>
     </ClerkProvider>

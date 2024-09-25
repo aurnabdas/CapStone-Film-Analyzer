@@ -1,17 +1,30 @@
 "use client"
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import ReactPlayer from 'react-player';
 import "../globals.css";
+import { useSelector, useDispatch } from 'react-redux';
+import { setFiles, setQuestion, setMovie, setQuestionslist } from '../store/reducer';
 
-export default function Review() {
-    const [files, setFiles] = useState([]);
-    const [questionlist, setQuestionslist] = useState([]);
-    const [question, setQuestion] = useState("");
-    const [movie, setMovie] = useState("");
+
+
+export default function Survey() {
+    const dispatch = useDispatch();
+
+    const files = useSelector((state) => state.files);
+    const question = useSelector((state) => state.question)
+    const questionlist = useSelector((state) => state.questionlist)
+    const movie = useSelector((state) => state.movie)
+
+    // console.log(useContext(StateContext)); //added to see if the states were of the correct type 
+
 
     const handleFile = (e) => {
         const selectedFiles = e.target.files;
-        setFiles(Array.from(selectedFiles));  // Set it as an array
+        dispatch(setFiles(Array.from(selectedFiles))); // Set it as an array
+        // this code right here gave me a hard time. first i forgot you are using a copy of the value you provided hence ..files, 
+        //notice how within setFiles([]) there is are array brackets, because you are set the array within the params. that is why when you ...files, it basically uncompresses each elements in a sense
+        //next its import to remember that selectedFiles itself is a array, so you need to spread out each elements using ...selectedFiles as wekk
+        dispatch(setFiles([...files , ...selectedFiles])) 
         console.log(files);
     };
 
@@ -24,23 +37,33 @@ export default function Review() {
             return
         }
 
-        setQuestionslist([...questionlist, question]);
-        setQuestion("");
+        //the same idea here just like when we used setFiles, the difference is yes questionsList is a array, but questions itself is not infact its a element. so you can just add that in normally
+        dispatch(setQuestionslist([...(questionlist), question]));
+        dispatch(setQuestion(""));
+        
     };
+////////////////////DRAG AND DROP FUNCTIONS///////////////////////////////////////////
+    // const checkIfVideo = (file) => file.type.startsWith("video");
 
-    const checkIfVideo = (file) => file.type.startsWith("video");
+    // const handleDrop = (e) => {
+    //     e.preventDefault();
+    //     const droppedFiles = e.dataTransfer.files;
+    //     setFiles(Array.from(droppedFiles));  // Set dropped files in state as an array
+    // };
 
-    const handleDrop = (e) => {
-        e.preventDefault();
-        const droppedFiles = e.dataTransfer.files;
-        setFiles(Array.from(droppedFiles));  // Set dropped files in state as an array
-    };
+    // const handleDragOver = (e) => {
+    //     e.preventDefault();
+    // };
 
-    const handleDragOver = (e) => {
-        e.preventDefault();
-    };
+    // console.log("question:", question); 
+    // console.log("questionlist:", questionlist); 
+    // console.log("movie:", movie); 
+    // console.log("Files:", files); 
+//////////////////////////////////////////////
 
     const videoUrls = useMemo(() =>{
+        if (!files) return [];
+
        return files.map(file => URL.createObjectURL(file));
 
 
@@ -56,8 +79,9 @@ export default function Review() {
         }
         console.log(movie)
 
-        setMovie("")
+        dispatch(setMovie(movie));
     }
+    
 
     return (
         // this puts everything in the middle
@@ -101,7 +125,7 @@ export default function Review() {
                     <input
                         type="text"
                         value={movie}
-                        onChange={(e) => setMovie(e.target.value)}
+                        onChange={(e) => dispatch(setMovie(e.target.value))}
                         className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your question"
                     />
@@ -129,7 +153,7 @@ export default function Review() {
                     <input
                         type="text"
                         value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
+                        onChange={(e) => dispatch(setQuestion(e.target.value))}
                         className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your question"
                     />

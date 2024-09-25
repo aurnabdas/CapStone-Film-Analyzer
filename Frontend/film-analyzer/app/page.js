@@ -1,6 +1,7 @@
 // pages/index.js
 import Head from 'next/head';
 import Link from 'next/link'; // Import the Link component
+import { StateProvider } from '../context/StateContext';
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
           <Link href="/signup">
             <button className="bg-gold text-white px-4 py-2 rounded">Register</button>
           </Link>
+          
         </nav>
       </header>
 
@@ -31,8 +33,17 @@ export default function Home() {
         <p className="mb-4">Or dive into the future with our advanced model, trained on over two decades of data, to predict whether upcoming films will be a hit or miss.</p>
         <button className="bg-red-theme text-white px-6 py-3 rounded mb-4">Predictions</button>
         <p className="mb-4">Track your emotions as you watch and share your thoughts with our Facial Review feature.</p>
+
+          
+        <Link href="/review">
         <button className="bg-red-theme text-white px-6 py-3 rounded mb-8">Write A Review</button>
-        
+        </Link>
+
+        <Link href="/survey">
+        <button className="bg-red-theme text-white px-6 py-3 rounded mb-8">Make A Survey</button>
+        </Link>
+
+
         <h2 className="text-2xl mb-6">Our Top Predictions Right Now:</h2>
         <div className="grid grid-cols-2 gap-8">
           <div className="bg-gray-700 p-4 rounded">

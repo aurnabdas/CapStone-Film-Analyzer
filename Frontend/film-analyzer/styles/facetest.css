@@ -1,0 +1,12 @@
+
+#video-container {
+    position: relative; /* This allows the canvas to be positioned relative to the video */
+    display: inline-block; /* Ensure that the container wraps tightly around the video */
+  }
+  
+  canvas {
+    position: absolute; /* Make sure the canvas overlays on top of the video */
+    top: 0;
+    left: 0;
+  }
+  

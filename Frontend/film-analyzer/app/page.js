@@ -31,7 +31,10 @@ export default function Home() {
         <p className="mb-4">Or dive into the future with our advanced model, trained on over two decades of data, to predict whether upcoming films will be a hit or miss.</p>
         <button className="bg-red-theme text-white px-6 py-3 rounded mb-4">Predictions</button>
         <p className="mb-4">Track your emotions as you watch and share your thoughts with our Facial Review feature.</p>
-        <button className="bg-red-theme text-white px-6 py-3 rounded mb-8">Write A Review</button>
+
+        <Link href="/review">
+          <button className="bg-red-theme text-white px-6 py-3 rounded mb-8">Write A Review</button>
+          </Link>
         
         <h2 className="text-2xl mb-6">Our Top Predictions Right Now:</h2>
         <div className="grid grid-cols-2 gap-8">

@@ -48,6 +48,8 @@ export default function Review() {
     setAnswers(updatedAnswers);
   };
 
+
+
   return (
     <div className="review-container" style={{ padding: '20px' }}>
       <Script src="/face-api.min.js" strategy="beforeInteractive" /> {/* Load face-api */}
@@ -109,7 +111,9 @@ export default function Review() {
       </button>
 
       {/* Hidden FaceTest component to capture emotions */}
-      <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured} />
+      <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured()} />
+
+      
     </div>
   );
 }

@@ -111,7 +111,7 @@ export default function Review() {
       </button>
 
       {/* Hidden FaceTest component to capture emotions */}
-      <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured()} />
+      <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured} />
 
       
     </div>

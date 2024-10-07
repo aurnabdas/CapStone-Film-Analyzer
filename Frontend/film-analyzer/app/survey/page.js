@@ -59,9 +59,24 @@ export default function Review() {
         setMovie("")
     }
 
+async function helloCallToBackend(){
+    const response  = await fetch ("http://127.0.0.1:8000/api/hello");
+    const value  = await response.json();
+    console.log(value)
+  }
+
+async function handleHelloCall(){
+    await helloCallToBackend()
+  }
+
+
     return (
         // this puts everything in the middle
         <main className="min-h-screen bg-gray-100 py-6'">
+
+    <button onClick={handleHelloCall}> 
+          Test to Check Backend Connection
+      </button>
 
         <div className='flex flex-col items-center '> 
             {/* this is the Display Video font */}

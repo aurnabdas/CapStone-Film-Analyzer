@@ -1,8 +1,10 @@
 "use client"; 
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function FaceTest({ onEmotionsCaptured, isRecording }) {
+  const [prevEmotion, setPrevEmotion] = useState(null); // Store the previous emotion
+
   useEffect(() => {
     let video = null;
     let canvas = null;
@@ -74,9 +76,14 @@ export default function FaceTest({ onEmotionsCaptured, isRecording }) {
 
         if (resizedDetections.length > 0) {
           const emotions = resizedDetections[0].expressions;
-          const dominantEmotion = getDominantEmotion(emotions); // Get dominant emotion
-          console.log('Dominant emotion:', dominantEmotion);
-          onEmotionsCaptured(dominantEmotion); // Pass dominant emotion to parent component
+          const dominantEmotion = getDominantEmotion(emotions);
+
+          // Filter out 'neutral' and duplicate emotions
+          if (dominantEmotion !== 'neutral' && dominantEmotion !== prevEmotion) {
+            setPrevEmotion(dominantEmotion); // Update the previous emotion
+            console.log('Dominant emotion:', dominantEmotion);
+            onEmotionsCaptured(dominantEmotion); // Pass the unique, non-neutral emotion to parent
+          }
         }
       }, 100);
     };
@@ -104,7 +111,7 @@ export default function FaceTest({ onEmotionsCaptured, isRecording }) {
     return () => {
       stopDetection();
     };
-  }, [isRecording]);
+  }, [isRecording, prevEmotion]); // Add prevEmotion to the dependency array
 
   return <div id="video-container" style={{ display: 'none' }}></div>; // Hidden container for canvas
 }

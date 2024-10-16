@@ -48,14 +48,12 @@ export default function Review() {
     setAnswers(updatedAnswers);
   };
 
-
-
   return (
     <div className="review-container" style={{ padding: '20px' }}>
       <Script src="/face-api.min.js" strategy="beforeInteractive" /> {/* Load face-api */}
 
       {/* Video Name */}
-      <h2 style={{ marginBottom: '20px' }}>{videoName}</h2>
+      <h2 style={{ marginBottom: '20px', textAlign: 'center', color: '#007bff' }}>{videoName}</h2>
 
       {/* Questions and Textboxes for Answers */}
       {questions.map((question, index) => (
@@ -95,25 +93,60 @@ export default function Review() {
       ))}
 
       {/* Start/Stop Buttons for Emotion Capture */}
-      <button
-        onClick={startRecording}
-        disabled={isRecording} // Disable button if already recording
-        style={{
-          padding: '10px 20px',
-          backgroundColor: isRecording ? '#ccc' : '#007bff',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          marginRight: '10px',
-        }}>
-        {isRecording ? 'Recording Emotions...' : 'Start Recording Emotions'}
-      </button>
+      <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+        <button
+          onClick={startRecording}
+          disabled={isRecording} // Disable button if already recording
+          style={{
+            padding: '10px 20px',
+            backgroundColor: isRecording ? '#ccc' : '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            marginRight: '10px',
+          }}>
+          {isRecording ? 'Recording Emotions...' : 'Start Recording Emotions'}
+        </button>
+
+        <button
+          onClick={stopRecording}
+          disabled={!isRecording} // Disable button if not recording
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#dc3545',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}>
+          Stop Recording
+        </button>
+      </div>
 
       {/* Hidden FaceTest component to capture emotions */}
       <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured} />
 
-      
+      {/* Display Captured Emotions */}
+      <div style={{ marginTop: '30px', textAlign: 'center' }}>
+        <h3>Captured Emotions:</h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {emotions.map((emotion, index) => (
+            <span key={index} style={{
+              padding: '8px 12px',
+              backgroundColor: '#f8f9fa',
+              border: '1px solid #ccc',
+              borderRadius: '20px',
+              margin: '5px',
+              fontWeight: 'bold',
+              color: '#333',
+              boxShadow: '0px 0px 5px rgba(0,0,0,0.1)'
+            }}>
+              {emotion}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

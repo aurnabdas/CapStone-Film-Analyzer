@@ -40,3 +40,7 @@
 
 - in order for Next.js  to properly make a call to Django we have to use django cors header, otherwise we getr an error because django just simply doesnt allow anyone to access the data unless its within the django file
 - [Django Cors Documentation](https://pypi.org/project/django-cors-headers/)
+
+
+https://dev.to/jakewitcher/using-env-files-for-environment-variables-in-python-applications-55a1
+ - I used this to figure out the .env variables

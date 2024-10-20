@@ -1,0 +1,17 @@
+annotated-types==0.7.0
+asgiref==3.8.1
+Django==5.1.1
+django-cors-headers==4.4.0
+django-ninja==1.3.0
+fire==0.7.0
+markdown-it-py==3.0.0
+mdurl==0.1.2
+pydantic==2.9.2
+pydantic_core==2.23.4
+Pygments==2.18.0
+PyYAML==6.0.2
+rav==0.0.9
+rich==13.9.1
+sqlparse==0.5.1
+termcolor==2.4.0
+typing_extensions==4.12.2

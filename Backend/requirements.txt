@@ -2,3 +2,5 @@ Django
 django-ninja
 rav
 django-cors-headers
+python-dotenv
+psycopg2

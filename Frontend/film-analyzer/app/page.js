@@ -1,12 +1,13 @@
 // pages/index.js
 import Head from 'next/head';
 import Link from 'next/link'; // Import the Link component
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'; // Import Clerk components
 
 export default function Home() {
   return (
     <div className="bg-steel-gray min-h-screen text-gold p-10">
       <Head>
-        <title>Movie Predictor</title>
+        <title>Film Analyzer</title>
         <meta name="description" content="Predict movie hits and misses" />
       </Head>
 
@@ -14,13 +15,25 @@ export default function Home() {
         <div className="text-2xl font-bold text-gold">Movie Predictor</div>
         <nav className="space-x-4">
           <Link href="/" className="text-gold">Home</Link>
-          <Link href="/about" className="text-gold">About Us</Link>
-          <Link href="/login">
-            <button className="bg-red-theme text-white px-4 py-2 rounded">Sign In</button>
-          </Link>
-          <Link href="/signup">
-            <button className="bg-gold text-white px-4 py-2 rounded">Register</button>
-          </Link>
+          <Link href="/" className="text-gold">About Us</Link>
+
+
+          {/* If signed out, show Sign In and Register buttons */}
+          <SignedOut>
+            <Link href="/login">
+              <button className="bg-red-theme text-white px-4 py-2 rounded">Sign In</button>
+            </Link>
+            <Link href="/signup">
+              <button className="bg-gold text-white px-4 py-2 rounded">Register</button>
+            </Link>
+          </SignedOut>
+
+          {/* If signed in, show the User avatar and Sign Out button */}
+          <SignedIn>
+          <Link href="/survey" className="text-gold">Survey</Link>
+          <Link href="/review" className="text-gold">Review</Link>
+            <UserButton />
+          </SignedIn>
         </nav>
       </header>
 
@@ -34,7 +47,7 @@ export default function Home() {
 
         <Link href="/review">
           <button className="bg-red-theme text-white px-6 py-3 rounded mb-8">Write A Review</button>
-          </Link>
+        </Link>
         
         <h2 className="text-2xl mb-6">Our Top Predictions Right Now:</h2>
         <div className="grid grid-cols-2 gap-8">

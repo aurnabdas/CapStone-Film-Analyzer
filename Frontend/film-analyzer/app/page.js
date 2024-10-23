@@ -1,43 +1,20 @@
-// pages/index.js
 import Head from 'next/head';
-import Link from 'next/link'; // Import the Link component
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'; // Import Clerk components
+import Link from 'next/link';
+import NavBar from '../components/NavBar'; // Import the NavBar component
 
 export default function Home() {
   return (
     <div className="bg-steel-gray min-h-screen text-gold p-10">
       <Head>
-        <title>Film Analyzer</title>
+        <title>Movie Predictor</title>
         <meta name="description" content="Predict movie hits and misses" />
       </Head>
 
-      <header className="flex justify-between items-center p-4">
-        <div className="text-2xl font-bold text-gold">Movie Predictor</div>
-        <nav className="space-x-4">
-          <Link href="/" className="text-gold">Home</Link>
-          <Link href="/" className="text-gold">About Us</Link>
+      {/* NavBar Component */}
+      <NavBar />
 
-
-          {/* If signed out, show Sign In and Register buttons */}
-          <SignedOut>
-            <Link href="/login">
-              <button className="bg-red-theme text-white px-4 py-2 rounded">Sign In</button>
-            </Link>
-            <Link href="/signup">
-              <button className="bg-gold text-white px-4 py-2 rounded">Register</button>
-            </Link>
-          </SignedOut>
-
-          {/* If signed in, show the User avatar and Sign Out button */}
-          <SignedIn>
-          <Link href="/survey" className="text-gold">Survey</Link>
-          <Link href="/review" className="text-gold">Review</Link>
-            <UserButton />
-          </SignedIn>
-        </nav>
-      </header>
-
-      <main className="text-center mt-16">
+      {/* Add padding to main content to prevent overlap with the fixed navbar */}
+      <main className="text-center mt-16 pt-20">
         <h1 className="text-4xl mb-6">Welcome to the Movie Predictor</h1>
         <p className="mb-4">Stay updated on the latest box office performances and see how current movies are doing in theaters.</p>
         <button className="bg-red-theme text-white px-6 py-3 rounded mb-4">Current Movies</button>
@@ -48,7 +25,7 @@ export default function Home() {
         <Link href="/review">
           <button className="bg-red-theme text-white px-6 py-3 rounded mb-8">Write A Review</button>
         </Link>
-        
+
         <h2 className="text-2xl mb-6">Our Top Predictions Right Now:</h2>
         <div className="grid grid-cols-2 gap-8">
           <div className="bg-gray-700 p-4 rounded">

@@ -65,7 +65,8 @@ INSTALLED_APPS = [
    'django.contrib.messages',
    'django.contrib.staticfiles',
    #third party
-   "corsheaders"
+   "corsheaders",
+   'rest_framework', 
 ]
 
 
@@ -185,4 +186,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Use the environment variable in your settings
+API_KEY = os.getenv("API_KEY")
 

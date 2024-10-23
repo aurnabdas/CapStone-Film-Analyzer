@@ -1,8 +1,10 @@
+const {nextui} = require('@nextui-org/theme');
 // tailwind.config.js
 module.exports = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx}', 
-    './components/**/*.{js,ts,jsx,tsx}',
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@nextui-org/theme/dist/components/[object Object].js"
   ],
   theme: {
     extend: {
@@ -13,5 +15,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [nextui()],
 };

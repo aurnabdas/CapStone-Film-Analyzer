@@ -5,12 +5,13 @@ import "../globals.css";
 
 export default function Review() {
     //-------------------states----------------------------
-    const [userID, setUserId] = useState(null);
+    const [userID, setUserId] = useState("2");
     const [files, setFiles] = useState([]);
     const [questionlist, setQuestionslist] = useState([]);
     const [question, setQuestion] = useState("");
     const [movie, setMovie] = useState("");
     const [videoUrls, setVideoUrls] = useState([]);
+    const [url, setUrl] = useState("");
     //-----------------------------------------------------
 
     //-------------------functions----------------------------
@@ -18,7 +19,7 @@ export default function Review() {
     const handleFile = (e) => {
         const selectedFiles = Array.from(e.target.files);
         setFiles(selectedFiles);
-        console.log(selectedFiles);
+        
     };
 
     const handleQuestions = (e) => {
@@ -32,24 +33,19 @@ export default function Review() {
         setQuestion("");
     };
 
-    const handleFilmName = (e) => {
-        e.preventDefault();
-        if (movie.trim() === "") {
-            alert("Please enter a valid movie name.");
-            return;
-        }
-        console.log("Movie Name:", movie);
-        setMovie(""); // Reset the input after submission
-    };
+    // const handleFilmName = (e) => {
+    //     e.preventDefault();
+    //     if (movie.trim() === "") {
+    //         alert("Please enter a valid movie name.");
+    //         return;
+    //     }
+    //     console.log("Movie Name:", movie);
+    //     setMovie(""); // Reset the input after submission
+    // };
 
     const handleUpload = async () => {
         if (files.length === 0) {
             alert("Please select a video to upload.");
-            return;
-        }
-    
-        if (movie.trim() === "") {
-            alert("Please enter a movie name.");
             return;
         }
     
@@ -58,11 +54,8 @@ export default function Review() {
             formData.append('video', file);
         });
     
-        // Add other necessary data
-        formData.append('film_name', movie);
-        formData.append('user_id', '1'); // Replace with actual user_id
-    
         try {
+            // Upload the video to the server
             const response = await fetch('http://127.0.0.1:8000/upload-survey-video/', {
                 method: 'POST',
                 body: formData,
@@ -72,15 +65,44 @@ export default function Review() {
                 const data = await response.json();
                 // Construct the full URL properly
                 const fullUrl = `http://127.0.0.1:8000${data.video_url}`;
-                setVideoUrls([fullUrl]); // Ensure this is a string URL
-                console.log("Upload successful:", data);
+                setVideoUrls([fullUrl]);
+                console.log("Upload successful:", data.video_url);
+                // Now that the video is uploaded, use the full URL for the next request
+                const surveyData = {
+                    user_Id: userID,  // Make sure userID is properly set
+                    film_name: movie,
+                    videoUrls: fullUrl // Use fullUrl directly
+                };
+    
+                // Send survey data to the backend
+                try {
+                    const response1 = await fetch('http://127.0.0.1:8000/api/survey', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Ensure JSON is correctly sent
+                        },
+                        body: JSON.stringify(surveyData),
+                    });
+    
+                    if (response1.ok) {
+                        console.log("Survey data saved successfully");
+                    } else {
+                        console.error("Failed to save survey data");
+                    }
+                } catch (error) {
+                    console.error("Error sending survey data:", error);
+                }
             } else {
                 console.error("Upload failed");
             }
         } catch (error) {
             console.error("Error uploading file:", error);
         }
+    
+        console.log("Movie Name:", movie);
+        setMovie(""); // Reset the input after submission
     };
+    
     
     
 
@@ -109,16 +131,15 @@ export default function Review() {
     ))}
 </div>
 
+        <input
+            type="file"
+            onChange={handleFile}
+            multiple
+            className="mb-6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-                <input
-                    type="file"
-                    onChange={handleFile}
-                    multiple
-                    className="mb-6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-
-                {/* Handles the Film Name */}
-                <form onSubmit={handleFilmName} className="w-full max-w-lg">
+        {/* Handles the Film Name */}
+                <form className="w-full max-w-lg">
                     <label className="block text-gray-700 text-lg mb-2">
                         Movie Title:
                         <div className='flex'>
@@ -129,11 +150,7 @@ export default function Review() {
                                 className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter movie title"
                             />
-                            <button
-                                type="submit"
-                                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                                Enter
-                            </button>
+                        
                         </div>
                     </label>
                 </form>
@@ -145,14 +162,14 @@ export default function Review() {
                 </button>
 
                 {/* Preview selected videos */}
-                {videoPreviews.length > 0 && (
+                {/* {videoPreviews.length > 0 && (
                     <div className="mt-6">
                         <h2 className="text-2xl font-bold mb-4">Video Preview:</h2>
                         {videoPreviews.map((url, index) => (
                             <video key={index} controls width="300" src={url} className="mb-4" />
                         ))}
                     </div>
-                )}
+                )} */}
             </div>
 
             {/* Handles the Questions */}

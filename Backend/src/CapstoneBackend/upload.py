@@ -10,9 +10,7 @@ class VideoUploadForSurveyView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
-        film_name = request.data.get('film_name')
-        user_id = request.data.get('user_id')
-
+        
         # Get the uploaded video file
         uploaded_file = request.FILES['video']
         file_name = uploaded_file.name

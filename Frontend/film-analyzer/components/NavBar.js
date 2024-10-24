@@ -17,7 +17,7 @@ const NavBar = () => {
         {/* Logo Section */}
         <Link href="/" className="flex items-center space-x-3">
           <span className="self-center text-2xl font-semibold text-white">
-            Movie Predictor
+            Film Analyzer
           </span>
         </Link>
 

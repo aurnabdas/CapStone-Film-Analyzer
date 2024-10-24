@@ -67,6 +67,7 @@ INSTALLED_APPS = [
    #third party
    "corsheaders",
    'rest_framework', 
+   "api"
 ]
 
 

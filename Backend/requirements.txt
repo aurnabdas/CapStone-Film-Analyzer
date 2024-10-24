@@ -4,3 +4,5 @@ rav
 django-cors-headers
 python-dotenv
 psycopg2
+djangorestframework
+google-generativeai

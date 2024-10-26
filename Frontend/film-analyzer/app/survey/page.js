@@ -11,7 +11,7 @@ export default function Review() {
     const [question, setQuestion] = useState("");
     const [movie, setMovie] = useState("");
     const [videoUrls, setVideoUrls] = useState([]);
-    const [url, setUrl] = useState("");
+    
     //-----------------------------------------------------
 
     //-------------------functions----------------------------
@@ -49,13 +49,14 @@ export default function Review() {
             return;
         }
     
+        // this just contains the actually video file
         const formData = new FormData();
         files.forEach((file) => {
             formData.append('video', file);
         });
     
         try {
-            // Upload the video to the server
+            // Uploading the video to the django server
             const response = await fetch('http://127.0.0.1:8000/upload-survey-video/', {
                 method: 'POST',
                 body: formData,
@@ -67,14 +68,14 @@ export default function Review() {
                 const fullUrl = `http://127.0.0.1:8000${data.video_url}`;
                 setVideoUrls([fullUrl]);
                 console.log("Upload successful:", data.video_url);
-                // Now that the video is uploaded, use the full URL for the next request
+
+                // now we use the information we gathered to send to the backend to make a entry into the survey table
                 const surveyData = {
                     user_Id: userID,  // Make sure userID is properly set
                     film_name: movie,
                     videoUrls: fullUrl // Use fullUrl directly
                 };
     
-                // Send survey data to the backend
                 try {
                     const response1 = await fetch('http://127.0.0.1:8000/api/survey', {
                         method: 'POST',
@@ -99,17 +100,14 @@ export default function Review() {
             console.error("Error uploading file:", error);
         }
     
-        console.log("Movie Name:", movie);
-        setMovie(""); // Reset the input after submission
+        setMovie(""); // Reset input box
     };
     
-    
-    
 
-    // For displaying video previews before uploading
-    const videoPreviews = useMemo(() => {
-        return files.map((file) => URL.createObjectURL(file));
-    }, [files]);
+    // // For displaying video previews before uploading
+    // const videoPreviews = useMemo(() => {
+    //     return files.map((file) => URL.createObjectURL(file));
+    // }, [files]);
 
     //-------------------------------------------------------------
 
@@ -122,14 +120,14 @@ export default function Review() {
 
             {/* displays the video */}
             <div className="flex flex-col items-center justify-center w-full">
-    {videoUrls.length > 0 && videoUrls.map((url, index) => (
-        <div key={index} className="flex flex-col items-center justify-center mb-4">
-            <div className="w-full max-w-2xl">
-                <ReactPlayer url={url} controls={true} width="100%" height="100%" />
+                {videoUrls.length > 0 && videoUrls.map((url, index) => (
+                <div key={index} className="flex flex-col items-center justify-center mb-4">
+                    <div className="w-full max-w-2xl">
+                        <ReactPlayer url={url} controls={true} width="100%" height="100%" />
+                    </div>
+                </div>
+                    ))}
             </div>
-        </div>
-    ))}
-</div>
 
         <input
             type="file"

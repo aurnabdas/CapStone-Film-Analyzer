@@ -11,29 +11,29 @@ class VideoUploadForSurveyView(APIView):
 
     def post(self, request):
         
-        # Get the uploaded video file
+        # this gets the name and the video itself from the request
         uploaded_file = request.FILES['video']
         file_name = uploaded_file.name
 
-        # Define the save path for the video file
+        # in setting.py we have paths set up that will be combined with our file name and this is where we will upload the video content
         save_dir = settings.MEDIA_ROOT
         save_path = os.path.join(save_dir, file_name)
 
-        # Ensure the 'uploads' directory exists
+        # this creates the directory if not made
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
-        # Save the file to the server
+        # Saves the video to the server
         with open(save_path, 'wb+') as destination:
             for chunk in uploaded_file.chunks():
                 destination.write(chunk)
 
-        # Construct the URL to access the video
+        # Now we construct the URL that we want to send to the frontend, so it can properly acquire the video to display in the backend
         video_url = f"{settings.MEDIA_URL}{file_name}"
         print(video_url)
 
-        # Return the video URL to the frontend
+        
         return Response({
             "message": "Video uploaded and survey updated successfully!",
-            "video_url": video_url,  # Use the URL, not the file path
+            "video_url": video_url,  
         }, status=200)

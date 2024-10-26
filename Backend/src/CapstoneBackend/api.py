@@ -26,3 +26,7 @@ def create_survey_entry(request):
 
     
 
+@api.get("/videoURL")
+def hello(request):
+    demourl = "http://127.0.0.1:8000/media/Star Wars Episode IV_ A New Hope - Trailer.mp4"
+    return {"message": "VideoURL provided", "url": demourl }

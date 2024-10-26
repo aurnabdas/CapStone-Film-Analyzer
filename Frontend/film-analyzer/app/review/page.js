@@ -1,8 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FaceTest from '../../components/FaceTest'; 
 import Script from 'next/script';
+import ReactPlayer from 'react-player';
 
+
+////////////////states////////////////////////
 export default function Review() {
   const videoName = 'Movies Name';
   const questions = ['What is your opinion of the trailer?', 'How did you feel throughout', 'Would you watch this in theaters?'];
@@ -11,34 +14,36 @@ export default function Review() {
   const [submittedAnswers, setSubmittedAnswers] = useState(Array(questions.length).fill(''));
   const [isRecording, setIsRecording] = useState(false); // Control recording state
   const [emotions, setEmotions] = useState([]); // Store captured emotions
+  const [videoUrls, setVideoUrls] = useState([]);
 
-  const handleEmotionsCaptured = (capturedEmotions) => {
+////////////////////////////////////////
+const handleEmotionsCaptured = (capturedEmotions) => {
     setEmotions((prevEmotions) => [...prevEmotions, capturedEmotions]);
     console.log('Captured emotions:', capturedEmotions);
   };
 
-  const startRecording = () => {
+const startRecording = () => {
     setIsRecording(true); // Start FaceTest recording
   };
 
-  const stopRecording = () => {
+const stopRecording = () => {
     setIsRecording(false); // Stop FaceTest recording
   };
 
-  // Handle input change for each question
-  const handleAnswerChange = (index, value) => {
+
+const handleAnswerChange = (index, value) => {
     const updatedAnswers = [...answers];
     updatedAnswers[index] = value;
     setAnswers(updatedAnswers);
   };
 
-  // Handle answer submission
-  const handleSubmitAnswer = (index) => {
+
+const handleSubmitAnswer = (index) => {
     const updatedSubmittedAnswers = [...submittedAnswers];
     updatedSubmittedAnswers[index] = answers[index];
     setSubmittedAnswers(updatedSubmittedAnswers);
 
-    stopRecording(); // Stop recording emotions when user submits an answer
+    stopRecording();
 
     console.log(`Answer to question ${index + 1}: ${answers[index]}`);
     console.log('Captured emotions during review:', emotions);
@@ -48,12 +53,47 @@ export default function Review() {
     setAnswers(updatedAnswers);
   };
 
+const handleUpload = async () => {
+      
+    
+    const response = await fetch('http://127.0.0.1:8000/api/videoURL', {
+        method: 'GET',
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        // console.log(data.url);
+        const fullUrl = data.url;
+        setVideoUrls([fullUrl]);
+    } else {
+        console.error("Failed to fetch video URL");
+    }
+
+  };
+
+// this makes sure that the function that allows for the video content to be displayed is used right when the page loads
+useEffect(() => {
+    handleUpload();
+    }, []);
+
+  ///////////////functions/////////////////////////
   return (
     <div className="review-container" style={{ padding: '20px' }}>
       <Script src="/face-api.min.js" strategy="beforeInteractive" /> {/* Load face-api */}
 
       {/* Video Name */}
       <h2 style={{ marginBottom: '20px', textAlign: 'center', color: '#007bff' }}>{videoName}</h2>
+
+      <div className="flex flex-col items-center justify-center w-full">
+          {videoUrls.length > 0 && videoUrls.map((url, index) => (
+            <div key={index} className="flex flex-col items-center justify-center mb-4">
+              <div className="w-full max-w-2xl">
+                <ReactPlayer url={url} controls={true} width="100%" height="100%" />
+              </div>
+            </div>
+          ))}
+      </div>
+
 
       {/* Questions and Textboxes for Answers */}
       {questions.map((question, index) => (

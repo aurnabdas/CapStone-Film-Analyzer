@@ -1,175 +1,206 @@
 "use client"
-import React, { useMemo, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ReactPlayer from 'react-player';
 import "../globals.css";
 
 export default function Review() {
+    //-------------------states----------------------------
+    const [userID, setUserId] = useState("2");
     const [files, setFiles] = useState([]);
     const [questionlist, setQuestionslist] = useState([]);
     const [question, setQuestion] = useState("");
     const [movie, setMovie] = useState("");
+    const [videoUrls, setVideoUrls] = useState([]);
+    
+    //-----------------------------------------------------
+
+    //-------------------functions----------------------------
 
     const handleFile = (e) => {
-        const selectedFiles = e.target.files;
-        setFiles(Array.from(selectedFiles));  // Set it as an array
-        console.log(files);
+        const selectedFiles = Array.from(e.target.files);
+        setFiles(selectedFiles);
+        
     };
 
     const handleQuestions = (e) => {
         e.preventDefault();
-        if(question === ""){
-            alert("Reenter")
-
-            //you have to return otherwise the empty string will still be set
-            return
+        if (question.trim() === "") {
+            alert("Please enter a valid question.");
+            return;
         }
 
         setQuestionslist([...questionlist, question]);
         setQuestion("");
     };
 
-    const checkIfVideo = (file) => file.type.startsWith("video");
+    // const handleFilmName = (e) => {
+    //     e.preventDefault();
+    //     if (movie.trim() === "") {
+    //         alert("Please enter a valid movie name.");
+    //         return;
+    //     }
+    //     console.log("Movie Name:", movie);
+    //     setMovie(""); // Reset the input after submission
+    // };
 
-    const handleDrop = (e) => {
-        e.preventDefault();
-        const droppedFiles = e.dataTransfer.files;
-        setFiles(Array.from(droppedFiles));  // Set dropped files in state as an array
-    };
-
-    const handleDragOver = (e) => {
-        e.preventDefault();
-    };
-
-    const videoUrls = useMemo(() =>{
-       return files.map(file => URL.createObjectURL(file));
-
-
-    }, [files])
-
-    const handleFilmName = (e) => {
-        e.preventDefault()
-        if(movie === ""){
-            alert("Reenter")
-
-            //you have to return otherwise the empty string will still be set
-            return
+    const handleUpload = async () => {
+        if (files.length === 0) {
+            alert("Please select a video to upload.");
+            return;
         }
-        console.log(movie)
+    
+        // this just contains the actually video file
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append('video', file);
+        });
+    
+        try {
+            // Uploading the video to the django server
+            const response = await fetch('http://127.0.0.1:8000/upload-survey-video/', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                // Construct the full URL properly
+                const fullUrl = `http://127.0.0.1:8000${data.video_url}`;
+                setVideoUrls([fullUrl]);
+                console.log("Upload successful:", data.video_url);
 
-        setMovie("")
-    }
+                // now we use the information we gathered to send to the backend to make a entry into the survey table
+                const surveyData = {
+                    user_Id: userID,  // Make sure userID is properly set
+                    film_name: movie,
+                    videoUrls: fullUrl // Use fullUrl directly
+                };
+    
+                try {
+                    const response1 = await fetch('http://127.0.0.1:8000/api/survey', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Ensure JSON is correctly sent
+                        },
+                        body: JSON.stringify(surveyData),
+                    });
+    
+                    if (response1.ok) {
+                        console.log("Survey data saved successfully");
+                    } else {
+                        console.error("Failed to save survey data");
+                    }
+                } catch (error) {
+                    console.error("Error sending survey data:", error);
+                }
+            } else {
+                console.error("Upload failed");
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
+    
+        setMovie(""); // Reset input box
+    };
+    
 
-async function helloCallToBackend(){
-    const response  = await fetch ("http://127.0.0.1:8000/api/hello");
-    const value  = await response.json();
-    console.log(value)
-  }
+    // // For displaying video previews before uploading
+    // const videoPreviews = useMemo(() => {
+    //     return files.map((file) => URL.createObjectURL(file));
+    // }, [files]);
 
-async function handleHelloCall(){
-    await helloCallToBackend()
-  }
-
+    //-------------------------------------------------------------
 
     return (
-        // this puts everything in the middle
         <main className="min-h-screen bg-gray-100 py-6'">
-
-    <button onClick={handleHelloCall}> 
-          Test to Check Backend Connection
-      </button>
-
-        <div className='flex flex-col items-center '> 
-            {/* this is the Display Video font */}
-            <h1 className="text-4xl font-bold mb-6 text-red-600">Displaying Video</h1>
+            {/* Handles the Videos and Film Name */}
+            <div className='flex flex-col items-center '>
+                {/* this is the Display Video font */}
+                <h1 className="text-4xl font-bold mb-6 text-red-600">Displaying Video</h1>
 
             {/* displays the video */}
             <div className="flex flex-col items-center justify-center w-full">
                 {videoUrls.length > 0 && videoUrls.map((url, index) => (
-                    <div key={index} className="flex flex-col items-center justify-center mb-4">
-                        <div className="w-full max-w-2xl">
-                            <ReactPlayer url={url} controls={true} width="100%" height="100%" />
-                        </div>
+                <div key={index} className="flex flex-col items-center justify-center mb-4">
+                    <div className="w-full max-w-2xl">
+                        <ReactPlayer url={url} controls={true} width="100%" height="100%" />
                     </div>
-                ))}
+                </div>
+                    ))}
             </div>
 
-            {/* Drag and Drop area (Optional, uncomment if needed) */}
-            {/* <div onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                className="w-full max-w-lg h-40 border-4 border-dashed border-gray-300 flex items-center justify-center mb-6 bg-white">
-                <p className="text-gray-500">Drag Files Here</p>
-            </div> */}
+        <input
+            type="file"
+            onChange={handleFile}
+            multiple
+            className="mb-6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-            <input
-                type="file"
-                onChange={handleFile}
-                multiple
-                className="mb-6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {/* max-w-lg limits the size of the form to whatever is specified */}
-            <form onSubmit={handleFilmName} className="w-full  max-w-lg">
-                <label className="block text-gray-700 text-lg mb-2">
-                    Movie Title:
-
-
-                    <div className='flex'> 
-                    <input
-                        type="text"
-                        value={movie}
-                        onChange={(e) => setMovie(e.target.value)}
-                        className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter your question"
-                    />
+        {/* Handles the Film Name */}
+                <form className="w-full max-w-lg">
+                    <label className="block text-gray-700 text-lg mb-2">
+                        Movie Title:
+                        <div className='flex'>
+                            <input
+                                type="text"
+                                value={movie}
+                                onChange={(e) => setMovie(e.target.value)}
+                                className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Enter movie title"
+                            />
+                        
+                        </div>
+                    </label>
+                </form>
 
                 <button
-                    type="submit"
-                    className=" p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                    Enter
+                    className="mb-6 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+                    onClick={handleUpload}>
+                    Submit
                 </button>
 
-                </div>
-                </label>
-                
-            </form>
-        </div>
+                {/* Preview selected videos */}
+                {/* {videoPreviews.length > 0 && (
+                    <div className="mt-6">
+                        <h2 className="text-2xl font-bold mb-4">Video Preview:</h2>
+                        {videoPreviews.map((url, index) => (
+                            <video key={index} controls width="300" src={url} className="mb-4" />
+                        ))}
+                    </div>
+                )} */}
+            </div>
 
+            {/* Handles the Questions */}
+            <div className='flex flex-col items-center '>
+                <form onSubmit={handleQuestions} className="w-full max-w-lg mb-6">
+                    <label className="block text-gray-700 text-lg mb-2">
+                        Questions:
+                        <input
+                            type="text"
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                            className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter your question"
+                        />
+                    </label>
+                    <button
+                        type="submit"
+                        className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                        Add Question
+                    </button>
+                </form>
 
-        
-        <div className='flex flex-col items-center '> 
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">List of Questions</h2>
 
-            {/* this is the form button with the Add Question button */}
-            <form onSubmit={handleQuestions} className="w-full max-w-lg mb-6">
-                <label className="block text-gray-700 text-lg mb-2">
-                    Questions:
-                    <input
-                        type="text"
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        className="mt-2 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter your question"
-                    />
-                </label>
-                <button
-                    type="submit"
-                    className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                    Add Question
-                </button>
-            </form>
-
-            
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">List of Questions</h2>
-
-            {/* the outer box of the text box */}
-            <ul className="w-full max-w-lg bg-white p-4 rounded-lg shadow-md">
-                {questionlist.map((question, index) => (
-                    <li
-                        key={index}
-                        className="p-2 mb-2 bg-gray-100 text-gray-800 font-medium rounded-lg border border-gray-200">
-                        {question}
-                    </li>
-                ))}
-            </ul>
-
+                <ul className="w-full max-w-lg bg-white p-4 rounded-lg shadow-md">
+                    {questionlist.map((question, index) => (
+                        <li
+                            key={index}
+                            className="p-2 mb-2 bg-gray-100 text-gray-800 font-medium rounded-lg border border-gray-200">
+                            {question}
+                        </li>
+                    ))}
+                </ul>
             </div>
         </main>
     );

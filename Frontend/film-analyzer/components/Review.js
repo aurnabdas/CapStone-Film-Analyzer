@@ -10,13 +10,13 @@ const Review = () => {
   const { user } = useUser();
   const router = useRouter();
   const videoName = "Movie's Name";
-  const questions = ["What is your opinion of the trailer?", "How did you feel throughout?", "Would you watch this in theaters?"];
 
-  const [answers, setAnswers] = useState(Array(questions.length).fill(''));
-  const [submittedAnswers, setSubmittedAnswers] = useState(Array(questions.length).fill(''));
   const [isRecording, setIsRecording] = useState(false);
   const [emotions, setEmotions] = useState([]);
   const [videoUrls, setVideoUrls] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState(Array(questions.length).fill(''));
+  const [submittedAnswers, setSubmittedAnswers] = useState(Array(questions.length).fill(''));
 
   // Redirect Studio role users to the homepage
   useEffect(() => {
@@ -40,6 +40,30 @@ const Review = () => {
     };
     handleUpload();
   }, []);
+
+  // Fetch questions on page load
+  useEffect(() => {
+    const handleQuestions = async () => {
+      const response = await fetch('http://127.0.0.1:8000/myapis/questions/', {
+        method: 'GET',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setQuestions(data.questions); // Assuming the API response has `questions` as an array
+      } else {
+        console.error("Failed to fetch questions");
+      }
+    };
+    handleQuestions();
+  }, []);
+
+  // Update answers and submittedAnswers when questions are set
+  useEffect(() => {
+    if (questions.length > 0) {
+      setAnswers(Array(questions.length).fill(''));
+      setSubmittedAnswers(Array(questions.length).fill(''));
+    }
+  }, [questions]);
 
   // Handle emotion capture and storage
   const handleEmotionsCaptured = (capturedEmotions) => {
@@ -97,27 +121,36 @@ const Review = () => {
 
       {/* Questions Section */}
       <section className="py-24 bg-black bg-opacity-70">
-        <div className="container mx-auto text-center">
-          {questions.map((question, index) => (
-            <div key={index} className="mb-8 p-6 bg-gray-900 bg-opacity-80 rounded-lg shadow-lg max-w-3xl mx-auto">
-              <label htmlFor={`question-${index}`} className="block text-lg mb-4">
-                {question}
-              </label>
-              <input
-                type="text"
-                id={`question-${index}`}
-                value={answers[index]}
-                onChange={(e) => handleAnswerChange(index, e.target.value)}
-                placeholder={`Answer for question ${index + 1}`}
-                className="w-full p-4 mb-4 rounded-md text-black"
-              />
-              <button
-                onClick={() => handleSubmitAnswer(index)}
-                className="px-8 py-3 rounded-md bg-[#D5A036] text-white hover:bg-yellow-600 transition"
-              >
-                Submit Answer
-              </button>
-            </div>
+      <div className="container mx-auto text-center">
+        {questions.map((question, index) => (
+          <div key={index} className="mb-8 p-6 bg-gray-900 bg-opacity-80 rounded-lg shadow-lg max-w-3xl mx-auto">
+            <label htmlFor={`question-${index}`} className="block text-lg mb-4">
+              {question}
+            </label>
+            <input
+              type="text"
+              id={`question-${index}`}
+              value={answers[index]}
+              onChange={(e) => {
+                const newAnswers = [...answers];
+                newAnswers[index] = e.target.value;
+                setAnswers(newAnswers);
+              }}
+              placeholder={`Answer for question ${index + 1}`}
+              className="w-full p-4 mb-4 rounded-md text-black"
+            />
+            <button
+              onClick={() => {
+                const newSubmittedAnswers = [...submittedAnswers];
+                newSubmittedAnswers[index] = answers[index];
+                setSubmittedAnswers(newSubmittedAnswers);
+                console.log(`Submitted answer for question ${index + 1}:`, answers[index]);
+              }}
+              className="px-8 py-3 rounded-md bg-[#D5A036] text-white hover:bg-yellow-600 transition"
+            >
+              Submit Answer
+            </button>
+          </div>
           ))}
 
           {/* Emotion Capture Buttons */}

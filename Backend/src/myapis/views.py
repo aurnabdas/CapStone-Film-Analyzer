@@ -38,3 +38,36 @@ def get_info_on_movies():
         return movie_list if movie_list else "No recommendations available."
     
     return "No recommendations available."
+
+@api_view(['GET', 'POST'])
+def get_questions(request):
+    # Call the get_info_on_movies function to get the movie information
+    questions = generate_questions()
+    
+    # Return the questions as a response
+    if questions:
+        return Response({"questions": questions}, status=status.HTTP_200_OK)
+    
+    return Response({"error": "No questions available at the moment."}, status=status.HTTP_400_BAD_REQUEST)
+
+def generate_questions():
+    try:
+        genai.configure(api_key=os.environ["API_KEY"])
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(
+            "Create 3 engaging questions to gather user opinions and emotional reactions to a trailer. "
+            "Questions should cover their overall impression, emotional experience, and interest in watching it in theaters. "
+            "Questions should capture a mix of personal reactions, interest level, and emotional impact."
+            "Do not include what the question is about, just include the questions"
+        )
+
+        if response and response.text:
+            # Split response into individual questions
+            questions = response.text.strip().split("\n")
+            return questions
+
+    except Exception as e:
+        print(f"Error generating questions: {e}")
+    
+    return None  # Return None if there is an error

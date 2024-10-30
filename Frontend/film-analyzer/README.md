@@ -24,6 +24,18 @@ pnpm dev
 bun dev
 ```
 
+# Clerk Installation
+## First Brew Install Ngork
+    brew install ngrok/ngrok/ngrok
+
+## Second connect my ngrok agent to your ngrok account
+    ngrok config add-authtoken <TOKEN> (the token is something aurnab only has)
+
+## Thrid Starts a tunnel wioth the domain that was generated for me, also since my frontend server runs on port 3000, that is the reason why the port at the end is 3000
+    ngrok http --domain=prime-escargot-relative.ngrok-free.app 3000
+
+    
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.

@@ -4,6 +4,7 @@ import NavBar from '../components/NavBar'; // Import the NavBar component
 import Features from '../components/Features';
 import Hero from '../components/Hero';
 import Team from '../components/Team';
+import ContactForm from '../components/ContactForm'
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
     <Hero/>
     <Features/>
     {/* <Team/> */}
+    <ContactForm/>
     </section>
   );
 }

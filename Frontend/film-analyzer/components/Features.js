@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ContactForm from '../components/ContactForm'
 
 const Features = () => {
   return (
@@ -98,6 +99,7 @@ const Features = () => {
         <button className="flex mx-auto mt-16 text-white bg-[#D5A036] border-0 py-2 px-8 focus:outline-none hover:bg-yellow-600 rounded text-lg">
           Learn More About Our Tools
         </button>
+        
       </div>
     </section>
   );

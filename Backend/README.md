@@ -15,6 +15,7 @@
 ## side note if you are adding a package make sure to add it into the requirements.txt file and then run the command below again
     pip3 install -r requirements.txt
 
+# Step 4: There is a .env file that required at the base of the Backend folder, this is for Railway and Gemini use
 
 # Step4: In order to run the server, at the root of the backend folder run the following
     rav run server
@@ -25,6 +26,7 @@
 
 
 
+    
 
 
 
@@ -45,3 +47,7 @@
 
 https://dev.to/jakewitcher/using-env-files-for-environment-variables-in-python-applications-55a1
  - I used this to figure out the .env variables
+
+- there are several resources used for clerk:
+    - https://clerk.com/docs/integrations/webhooks/sync-data
+    - https://ngrok.com/docs/getting-started/#step-1-install

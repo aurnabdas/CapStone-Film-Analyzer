@@ -1,5 +1,5 @@
-// app/signup/page.js
-import { SignUp } from '@clerk/nextjs'; // Updated import
+// app/signup/[[...rest]]/page.js
+import { SignUp } from '@clerk/nextjs';
 
 export default function SignUpPage() {
   return (

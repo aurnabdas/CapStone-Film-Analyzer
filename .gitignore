@@ -1,189 +1,171 @@
+# Backend ignore rules (Django and Python)
 
-#template found im this link https://djangowaves.com/tips-tricks/gitignore-for-a-python-project/
-# BACKEND 
-# Django #
-*.log
-*.pot
-*.pyc
-__pycache__
-db.sqlite3
-media
+# Django logs and cache
+Backend/*.log
+Backend/*.pot
+Backend/*.pyc
+Backend/__pycache__/
+Backend/db.sqlite3
+Backend/media/
 
-# Backup files # 
-*.bak 
+# Backup files
+Backend/*.bak
 
-# If you are using PyCharm # 
-# User-specific stuff
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
+# PyCharm specific
+Backend/.idea/**/workspace.xml
+Backend/.idea/**/tasks.xml
+Backend/.idea/**/usage.statistics.xml
+Backend/.idea/**/dictionaries
+Backend/.idea/**/shelf
+Backend/.idea/**/aws.xml
+Backend/.idea/**/contentModel.xml
+Backend/.idea/**/dataSources/
+Backend/.idea/**/dataSources.ids
+Backend/.idea/**/dataSources.local.xml
+Backend/.idea/**/sqlDataSources.xml
+Backend/.idea/**/dynamic.xml
+Backend/.idea/**/uiDesigner.xml
+Backend/.idea/**/dbnavigator.xml
+Backend/.idea/**/gradle.xml
+Backend/.idea/**/libraries
 
-# AWS User-specific
-.idea/**/aws.xml
+# IntelliJ and JIRA plugin
+Backend/out/
+Backend/atlassian-ide-plugin.xml
 
-# Generated files
-.idea/**/contentModel.xml
+# Python
+Backend/*.py[cod]
+Backend/*$py.class
 
-# Sensitive or high-churn files
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
+# Distribution / packaging
+Backend/.Python
+Backend/build/
+Backend/develop-eggs/
+Backend/dist/
+Backend/downloads/
+Backend/eggs/
+Backend/.eggs/
+Backend/lib/
+Backend/lib64/
+Backend/parts/
+Backend/sdist/
+Backend/var/
+Backend/wheels/
+Backend/*.whl
+Backend/*.egg-info/
+Backend/.installed.cfg
+Backend/*.egg
+Backend/*.manifest
+Backend/*.spec
 
-# Gradle
-.idea/**/gradle.xml
-.idea/**/libraries
+# Installer logs
+Backend/pip-log.txt
+Backend/pip-delete-this-directory.txt
 
-# File-based project format
-*.iws
+# Unit test / coverage reports
+Backend/htmlcov/
+Backend/.tox/
+Backend/.coverage
+Backend/.coverage.*
+Backend/.cache
+Backend/.pytest_cache/
+Backend/nosetests.xml
+Backend/coverage.xml
+Backend/*.cover
+Backend/.hypothesis/
 
-# IntelliJ
-out/
+# Jupyter Notebook
+Backend/.ipynb_checkpoints
 
-# JIRA plugin
-atlassian-ide-plugin.xml
+# pyenv
+Backend/.python-version
 
-# Python # 
-*.py[cod] 
-*$py.class 
+# celery
+Backend/celerybeat-schedule.*
 
-# Distribution / packaging 
-.Python build/ 
-develop-eggs/ 
-dist/ 
-downloads/ 
-eggs/ 
-.eggs/ 
-lib/ 
-lib64/ 
-parts/ 
-sdist/ 
-var/ 
-wheels/ 
-*.whl
-*.egg-info/ 
-.installed.cfg 
-*.egg 
-*.manifest 
-*.spec 
+# SageMath
+Backend/*.sage.py
 
-# Installer logs 
-pip-log.txt 
-pip-delete-this-directory.txt 
+# Python environments
+Backend/.env
+Backend/.venv
+Backend/env/
+Backend/venv/
+Backend/ENV/
+Backend/env.bak/
+Backend/venv.bak/
 
-# Unit test / coverage reports 
-htmlcov/ 
-.tox/ 
-.coverage 
-.coverage.* 
-.cache 
-.pytest_cache/ 
-nosetests.xml 
-coverage.xml 
-*.cover 
-.hypothesis/ 
+# mkdocs documentation
+Backend/site/
 
-# Jupyter Notebook 
-.ipynb_checkpoints 
+# mypy
+Backend/.mypy_cache/
 
-# pyenv 
-.python-version 
+# Sublime Text
+Backend/*.tmlanguage.cache
+Backend/*.tmPreferences.cache
+Backend/*.stTheme.cache
+Backend/*.sublime-workspace
+Backend/*.sublime-project
 
-# celery 
-celerybeat-schedule.* 
+# sftp configuration file
+Backend/sftp-config.json
 
-# SageMath parsed files 
-*.sage.py 
+# Package control specific files
+Backend/Package Control.last-run
+Backend/Package Control.ca-list
+Backend/Package Control.ca-bundle
+Backend/Package Control.system-ca-bundle
+Backend/GitHub.sublime-settings
 
-# Environments 
-.env 
-.venv 
-env/ 
-venv/ 
-ENV/ 
-env.bak/ 
-venv.bak/ 
+# Visual Studio Code
+Backend/.vscode/*
+!Backend/.vscode/settings.json
+!Backend/.vscode/tasks.json
+!Backend/.vscode/launch.json
+!Backend/.vscode/extensions.json
+Backend/.history
 
-# mkdocs documentation 
-/site 
-
-# mypy 
-.mypy_cache/ 
-
-# Sublime Text # 
-*.tmlanguage.cache 
-*.tmPreferences.cache 
-*.stTheme.cache 
-*.sublime-workspace 
-*.sublime-project 
-
-# sftp configuration file 
-sftp-config.json 
-
-# Package control specific files Package 
-Control.last-run 
-Control.ca-list 
-Control.ca-bundle 
-Control.system-ca-bundle 
-GitHub.sublime-settings 
-
-# Visual Studio Code # 
-.vscode/* 
-!.vscode/settings.json 
-!.vscode/tasks.json 
-!.vscode/launch.json 
-!.vscode/extensions.json 
-.history
-
-requirements.txt
+# Requirements file
+Backend/requirements.txt
 
 # Ignore migrations
-*/migrations/*
+Backend/**/migrations/*
 
 
-# FRONTEND 
+# Frontend ignore rules (Next.js, Node.js)
 
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Node.js dependencies
+Frontend/film-analyzer/node_modules/
+Frontend/film-analyzer/.pnp/
+Frontend/film-analyzer/.pnp.js
+Frontend/film-analyzer/.yarn/install-state.gz
 
-# dependencies
-node_modules/
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
+# Testing and coverage
+Frontend/film-analyzer/coverage/
 
-# testing
-/coverage
+# Next.js build output
+Frontend/film-analyzer/.next/
+Frontend/film-analyzer/out/
 
-# next.js
-/.next/
-/out/
+# Production build
+Frontend/film-analyzer/build/
 
-# production
-/build
+# Misc files
+Frontend/film-analyzer/.DS_Store
+Frontend/film-analyzer/*.pem
 
-# misc
-.DS_Store
-*.pem
+# Debug logs
+Frontend/film-analyzer/npm-debug.log*
+Frontend/film-analyzer/yarn-debug.log*
+Frontend/film-analyzer/yarn-error.log*
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Local environment files
+Frontend/film-analyzer/.env*.local
 
-# local env files
-.env*.local
+# Vercel deployment config
+Frontend/film-analyzer/.vercel
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-
+# TypeScript files
+Frontend/film-analyzer/*.tsbuildinfo
+Frontend/film-analyzer/next-env.d.ts

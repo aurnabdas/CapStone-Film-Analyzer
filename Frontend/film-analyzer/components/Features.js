@@ -35,7 +35,7 @@ const Features = () => {
               <p className="text-[18px] leading-relaxed text-white">
                 Track viewers' emotions as they watch movie trailers, providing insights into how scenes affect audiences in real-time.
               </p>
-              <Link href="/review" className="mt-3 text-[#FFD700] inline-flex items-center">
+              <Link href="https://face-specs.vercel.app/" target="_blank" rel="noopener noreferrer" className="mt-3 text-[#FFD700] inline-flex items-center">
                 Start Tracking Emotions →
               </Link>
             </div>

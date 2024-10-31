@@ -4,6 +4,11 @@ import os
 from email.message import EmailMessage
 import ssl
 import smtplib
+import django
+from api.models import User
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CapstoneBackend.settings")
+django.setup()
 
 
 api = NinjaAPI()
@@ -13,19 +18,25 @@ def hello(request):
     print(request)
     return {"message": "Hello Word"}
 
-@api.post("/users")
+@api.post("/users/reviewer")
 def users(request):
     body = request.body.decode('utf-8')
     email = json.loads(body)
+    User.objects.create(username= body, role = "reviewer")
     print(body)
+    return {"message": "Success"}
+
+@api.post("/users/studio/{email}")
+def users(request, email: str):
+    query = {"username": email, "role": "reviewer"}
+    User.objects.create(username= email, role = "studio")
+    print(email)
     return {"message": "Success"}
 
 @api.post("/survey")
 def create_survey_entry(request):
-        # Parse the JSON body from the request
         body = json.loads(request.body.decode('utf-8'))
         
-        # Extract the data from the parsed JSON
         user_id = body.get("user_Id")
         film_name = body.get("film_name")
         video_url = body.get("videoUrls")

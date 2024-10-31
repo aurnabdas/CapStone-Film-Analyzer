@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import ReactPlayer from 'react-player';
 import "../globals.css";
-
+import NavBar from '../../components/NavBar';
 export default function Review() {
     //-------------------states----------------------------
     const [userID, setUserId] = useState("2");
@@ -113,6 +113,7 @@ export default function Review() {
 
     return (
         <main className="min-h-screen bg-gray-100 py-6'">
+            <NavBar/>
             {/* Handles the Videos and Film Name */}
             <div className='flex flex-col items-center '>
                 {/* this is the Display Video font */}

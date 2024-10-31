@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     // console.log('Webhook body:', body)
     // console.log('Webhook body:', email_addresses[0].email_address)
 
-    const res = await fetch("http://127.0.0.1:8000/api/users",
+    const res = await fetch("http://127.0.0.1:8000/api/users/reviewer",
         {
             method: 'POST',
             headers:{

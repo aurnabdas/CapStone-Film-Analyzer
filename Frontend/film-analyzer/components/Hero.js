@@ -31,7 +31,7 @@ const Hero = () => {
             </button>
           </Link>
           <Link href="/survey">
-            <button className="bg-[#FFD700] text-white px-8 py-3 rounded-lg text-lg hover:bg-yellow-600 transition duration-300">
+            <button className="bg-[#D5A036] text-white px-8 py-3 rounded-lg text-lg hover:bg-yellow-600 transition duration-300">
               Take a Survey
             </button>
           </Link>

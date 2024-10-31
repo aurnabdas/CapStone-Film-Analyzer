@@ -45,7 +45,7 @@ export default function ContactForm() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Contact Us</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Contact Us And/Or Request Studio Account</h2>
         
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 font-semibold">

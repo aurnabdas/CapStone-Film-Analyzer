@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import FaceTest from './FaceTest'; // Adjust path if needed
 import Script from 'next/script';
 import ReactPlayer from 'react-player';
+import NavBar from './NavBar';
 
 const Review = () => {
   const { user } = useUser();
@@ -104,6 +105,7 @@ const Review = () => {
         height: "100vh",
       }}
     >
+      <NavBar/>
       {/* Video Section */}
       <section className="flex items-center justify-center h-screen" style={{ background: 'rgba(0, 0, 0, 0.6)' }}>
         <div className="container mx-auto text-center">

@@ -29,6 +29,7 @@ Backend/.idea/**/dbnavigator.xml
 Backend/.idea/**/gradle.xml
 Backend/.idea/**/libraries
 
+
 # IntelliJ and JIRA plugin
 Backend/out/
 Backend/atlassian-ide-plugin.xml
@@ -131,6 +132,9 @@ Backend/requirements.txt
 
 # Ignore migrations
 Backend/**/migrations/*
+
+# Ignore all __pycache__ directories recursively
+**/__pycache__/
 
 
 # Frontend ignore rules (Next.js, Node.js)

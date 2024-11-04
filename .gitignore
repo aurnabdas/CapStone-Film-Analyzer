@@ -1,0 +1,175 @@
+# Backend ignore rules (Django and Python)
+
+# Django logs and cache
+Backend/*.log
+Backend/*.pot
+Backend/*.pyc
+Backend/__pycache__/
+Backend/db.sqlite3
+Backend/media/
+
+# Backup files
+Backend/*.bak
+
+# PyCharm specific
+Backend/.idea/**/workspace.xml
+Backend/.idea/**/tasks.xml
+Backend/.idea/**/usage.statistics.xml
+Backend/.idea/**/dictionaries
+Backend/.idea/**/shelf
+Backend/.idea/**/aws.xml
+Backend/.idea/**/contentModel.xml
+Backend/.idea/**/dataSources/
+Backend/.idea/**/dataSources.ids
+Backend/.idea/**/dataSources.local.xml
+Backend/.idea/**/sqlDataSources.xml
+Backend/.idea/**/dynamic.xml
+Backend/.idea/**/uiDesigner.xml
+Backend/.idea/**/dbnavigator.xml
+Backend/.idea/**/gradle.xml
+Backend/.idea/**/libraries
+
+
+# IntelliJ and JIRA plugin
+Backend/out/
+Backend/atlassian-ide-plugin.xml
+
+# Python
+Backend/*.py[cod]
+Backend/*$py.class
+
+# Distribution / packaging
+Backend/.Python
+Backend/build/
+Backend/develop-eggs/
+Backend/dist/
+Backend/downloads/
+Backend/eggs/
+Backend/.eggs/
+Backend/lib/
+Backend/lib64/
+Backend/parts/
+Backend/sdist/
+Backend/var/
+Backend/wheels/
+Backend/*.whl
+Backend/*.egg-info/
+Backend/.installed.cfg
+Backend/*.egg
+Backend/*.manifest
+Backend/*.spec
+
+# Installer logs
+Backend/pip-log.txt
+Backend/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+Backend/htmlcov/
+Backend/.tox/
+Backend/.coverage
+Backend/.coverage.*
+Backend/.cache
+Backend/.pytest_cache/
+Backend/nosetests.xml
+Backend/coverage.xml
+Backend/*.cover
+Backend/.hypothesis/
+
+# Jupyter Notebook
+Backend/.ipynb_checkpoints
+
+# pyenv
+Backend/.python-version
+
+# celery
+Backend/celerybeat-schedule.*
+
+# SageMath
+Backend/*.sage.py
+
+# Python environments
+Backend/.env
+Backend/.venv
+Backend/env/
+Backend/venv/
+Backend/ENV/
+Backend/env.bak/
+Backend/venv.bak/
+
+# mkdocs documentation
+Backend/site/
+
+# mypy
+Backend/.mypy_cache/
+
+# Sublime Text
+Backend/*.tmlanguage.cache
+Backend/*.tmPreferences.cache
+Backend/*.stTheme.cache
+Backend/*.sublime-workspace
+Backend/*.sublime-project
+
+# sftp configuration file
+Backend/sftp-config.json
+
+# Package control specific files
+Backend/Package Control.last-run
+Backend/Package Control.ca-list
+Backend/Package Control.ca-bundle
+Backend/Package Control.system-ca-bundle
+Backend/GitHub.sublime-settings
+
+# Visual Studio Code
+Backend/.vscode/*
+!Backend/.vscode/settings.json
+!Backend/.vscode/tasks.json
+!Backend/.vscode/launch.json
+!Backend/.vscode/extensions.json
+Backend/.history
+
+# Requirements file
+Backend/requirements.txt
+
+# Ignore migrations
+Backend/**/migrations/*
+
+# Ignore all __pycache__ directories recursively
+**/__pycache__/
+
+
+# Frontend ignore rules (Next.js, Node.js)
+
+# Node.js dependencies
+Frontend/film-analyzer/node_modules/
+Frontend/film-analyzer/.pnp/
+Frontend/film-analyzer/.pnp.js
+Frontend/film-analyzer/.yarn/install-state.gz
+
+# Testing and coverage
+Frontend/film-analyzer/coverage/
+
+# Next.js build output
+Frontend/film-analyzer/.next/
+Frontend/film-analyzer/out/
+
+# Production build
+Frontend/film-analyzer/build/
+
+# Misc files
+Frontend/film-analyzer/.DS_Store
+Frontend/film-analyzer/*.pem
+
+# Debug logs
+Frontend/film-analyzer/npm-debug.log*
+Frontend/film-analyzer/yarn-debug.log*
+Frontend/film-analyzer/yarn-error.log*
+
+# Local environment files
+Frontend/film-analyzer/.env*.local
+
+# Vercel deployment config
+Frontend/film-analyzer/.vercel
+
+# TypeScript files
+Frontend/film-analyzer/*.tsbuildinfo
+Frontend/film-analyzer/next-env.d.ts

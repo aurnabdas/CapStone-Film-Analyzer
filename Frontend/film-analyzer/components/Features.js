@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ContactForm from '../components/ContactForm'
 
 const Features = () => {
   return (
@@ -34,7 +35,7 @@ const Features = () => {
               <p className="text-[18px] leading-relaxed text-white">
                 Track viewers' emotions as they watch movie trailers, providing insights into how scenes affect audiences in real-time.
               </p>
-              <Link href="/review" className="mt-3 text-[#FFD700] inline-flex items-center">
+              <Link href="https://face-specs.vercel.app/" target="_blank" rel="noopener noreferrer" className="mt-3 text-[#FFD700] inline-flex items-center">
                 Start Tracking Emotions →
               </Link>
             </div>
@@ -98,6 +99,7 @@ const Features = () => {
         <button className="flex mx-auto mt-16 text-white bg-[#D5A036] border-0 py-2 px-8 focus:outline-none hover:bg-yellow-600 rounded text-lg">
           Learn More About Our Tools
         </button>
+        
       </div>
     </section>
   );

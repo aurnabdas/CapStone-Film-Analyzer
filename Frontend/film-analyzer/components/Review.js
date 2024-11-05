@@ -13,6 +13,8 @@ const Review = () => {
   const videoName = "Movie's Name";
 
   const [isRecording, setIsRecording] = useState(false);
+  const [showVideo, setShowVideo] = useState(false); // New state to control video visibility
+  const [playing, setPlaying] = useState(false); // New state to control video playback
   const [emotions, setEmotions] = useState([]);
   const [videoUrls, setVideoUrls] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -66,17 +68,13 @@ const Review = () => {
 
   const startRecordingAndPlayVideo = () => {
     setIsRecording(true);
-    if (playerRef.current) {
-      playerRef.current.seekTo(0); // Restart video from the beginning if needed
-      playerRef.current.getInternalPlayer().play();
-    }
+    setShowVideo(true); // Show the video player when starting
+    setPlaying(true); // Start playing the video
   };
 
   const stopRecordingAndPauseVideo = () => {
     setIsRecording(false);
-    if (playerRef.current) {
-      playerRef.current.getInternalPlayer().pause();
-    }
+    setPlaying(false); // Pause the video
   };
 
   const handleAnswerChange = (index, value) => {
@@ -104,11 +102,24 @@ const Review = () => {
         <div className="container mx-auto text-center">
           <Script src="/face-api.min.js" strategy="beforeInteractive" />
           <h2 className="text-[60px] font-bold text-[#D5A036] mb-4">{videoName}</h2>
-          <div className="w-full max-w-3xl mx-auto mb-8">
-            {videoUrls.length > 0 && videoUrls.map((url, index) => (
-              <ReactPlayer key={index} url={url} ref={playerRef} controls width="100%" height="100%" />
-            ))}
-          </div>
+          
+          {/* Video Display */}
+          {showVideo && (
+            <div className="w-full max-w-3xl mx-auto mb-8">
+              {videoUrls.length > 0 && videoUrls.map((url, index) => (
+                <ReactPlayer
+                  key={index}
+                  url={url}
+                  ref={playerRef}
+                  controls
+                  width="100%"
+                  height="100%"
+                  playing={playing} // Control playback with `playing` state
+                />
+              ))}
+            </div>
+          )}
+
           <button
             onClick={startRecordingAndPlayVideo}
             disabled={isRecording}
@@ -149,16 +160,6 @@ const Review = () => {
               </button>
             </div>
           ))}
-          <div className="mt-12 text-center">
-            <h3 className="text-[36px] font-semibold text-[#D5A036]">Captured Emotions:</h3>
-            <div className="flex flex-wrap justify-center mt-4 gap-2">
-              {emotions.map((emotion, index) => (
-                <span key={index} className="px-4 py-2 rounded-full bg-gray-800 text-white shadow-lg">
-                  {emotion}
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 

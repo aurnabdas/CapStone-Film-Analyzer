@@ -19,6 +19,78 @@ def hello(request):
     print(request)
     return {"message": "Hello Word"}
 
+
+
+@api.post("/check")
+def check(request):
+    body = request.body.decode('utf-8')
+    user_email = json.loads(body)
+    user = User.objects.get(username=user_email)
+    movies = []
+    # print(user.user_id)
+    # print(user.role)
+    survey_id = ToDo.objects.filter(user=user.user_id).values_list('survey',flat=True).distinct()
+    for i in list(survey_id):
+        survey = Survey.objects.get(survey_id=i)
+        movies.append(survey.film_name)   
+    return {"message": movies}
+
+@api.post("/getcustomquestions")
+def q(request):
+    body = request.body.decode('utf-8')
+    name = json.loads(body)
+    questions = []
+    survey = Survey.objects.get(film_name=name)
+    survey_id = survey.survey_id
+    question_ids = SurveyQuestion.objects.filter(survey=survey_id).values_list('question',flat=True).distinct()
+    for i in list(question_ids):
+        question = Question.objects.get(question_id=i)
+        questions.append(question.question_text)
+    print(questions)
+    return {"message": questions}
+
+
+
+
+
+@api.post("/videoURL")
+def videoURL(request):
+    body = request.body.decode('utf-8')
+    name = json.loads(body)
+    
+    survey = Survey.objects.get(film_name=name)
+    url = survey.video_url
+    
+    return {"message": "VideoURL provided", "url": url }
+
+# https://www.youtube.com/watch?v=g_j6ILT-X0k&t=460s the reference for most of the code that sends the email
+@api.post("/email")
+def users(request):
+    body = request.body.decode('utf-8')
+    data = json.loads(body)
+
+    user_email = data.get("email")
+    comments = data.get("message")
+    email_password =  os.getenv("EMAIL_PASSWORD")
+    sender_email = "filmanalyzerteam@gmail.com"
+    subject =  "creating a studio account"
+    message = f"{user_email} says {comments}:"
+
+    em = EmailMessage()
+    em['From'] = sender_email
+    em['To'] = sender_email
+    em["Subject"] = subject
+    em.set_content(message)
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+        smtp.login(sender_email, email_password)
+        smtp.sendmail(sender_email, sender_email, em.as_string())
+
+    return {"message": "Success"}
+
+#____________________________________________________________
 @api.post("/users/reviewer")
 def users(request):
     body = request.body.decode('utf-8')
@@ -39,7 +111,8 @@ def users(request, email: str):
 def create_survey_entry(request):
     body = json.loads(request.body.decode('utf-8'))
     
-    user_id = body.get("user_Id")
+    # user_id = body.get("user_Id") // i need to create a api call to get the id of a user given their username
+    user_id = 22
     survey_id = body.get("survey_Id")
     film_name = body.get("film_name")
     video_url = body.get("videoUrls")
@@ -54,7 +127,7 @@ def create_survey_entry(request):
 
     # Print to verify (remove in production)
     print(f"User ID: {user_id}, Film Name: {film_name}, Video URL: {video_url}")
-    return JsonResponse({"message": "Survey Entry Created", "data": body})
+    return {"message": "Survey Entry Created", "data": body}
 
 #Delete request to delete survey from table using survey id 
 @api.delete("/survey/{survey_id}")
@@ -72,25 +145,41 @@ def delete_survey_entry(request, survey_id: int):
 def create_custom_question_answer(request):
     body = json.loads(request.body.decode('utf-8'))
 
-    user_id = body.get("user_id")
-    survey_id = body.get("survey_id")
-    question_id = body.get("question_id")
+    userName = body.get("userName")
+    question = body.get("question")
     answer = body.get("answer")
 
-    # Retrieve User, Survey, and Question instances
-    try:
-        user = User.objects.get(user_id=user_id)
-        survey = Survey.objects.get(survey_id=survey_id)
-        question = Question.objects.get(question_id=question_id)  # Corrected to use question_id
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
-    except Survey.DoesNotExist:
-        return JsonResponse({"error": "Survey not found"}, status=404)
-    except Question.DoesNotExist:
-        return JsonResponse({"error": "Question not found"}, status=404)
 
-    # Create CustomQuestionAnswer entry
-    custom_answer = CustomQuestionAnswer.objects.create(
+    user = User.objects.get(username=userName) 
+    question = Question.objects.get(question_text=question) 
+    survey_question = SurveyQuestion.objects.get(question=question)  
+    survey = survey_question.survey  
+
+    # for developer to quicky check what is being put into the database
+    print(user.user_id)
+    print(question.question_id)
+    print(survey.survey_id)
+    print(answer)
+
+    # Checks if the answer is blank
+    if not answer.strip():
+        return JsonResponse({
+            "message": "Answer cannot be blank."
+        }, status=400)
+    #--------------------------------------------------------------
+    # Checks if an answer already exists for this user, survey, and question
+    existing_answer = CustomQuestionAnswer.objects.filter(
+        user=user,
+        survey=survey,
+        question=question
+    ).first()
+    
+    if existing_answer:
+        return JsonResponse({
+            "message": "You have already answered this question."
+        }, status=400)
+    #--------------------------------------------------------------
+    CustomQuestionAnswer.objects.create(
         user=user,
         survey=survey,
         question=question,
@@ -98,14 +187,7 @@ def create_custom_question_answer(request):
     )
 
     return JsonResponse({
-        "message": "Custom Question Answer created successfully",
-        "data": {
-            "user_id": user_id,
-            "survey_id": survey_id,
-            "question_id": question_id,
-            "answer": answer
-        }
-    }, status=201)
+        "message": "Custom Question Answer created successfully"}, status=201)
 
 # GET Method to retrieve all CustomQuestionAnswer entries
 @api.get("/custom-question-answers")
@@ -210,20 +292,25 @@ def get_question(request, question_id: int):
 def create_standard_question_answer(request):
     body = json.loads(request.body.decode('utf-8'))
 
-    user_id = body.get("user_id")
-    survey_id = body.get("survey_id")
-    mood_based_on_video = body.get("mood_based_on_video")
-    mood_based_on_text = body.get("mood_based_on_text")
-    watch_likelihood = body.get("watch_likelihood")
+    username = body.get("userName")
+    moviename = body.get("movieName")
+    mood_based_on_video = body.get("emotions")
+    mood_based_on_text = body.get("firstQuestionAnswer")
+    watch_likelihood = int(body.get("secondQuestionAnswer")) #turn this into a int
+
 
     # Retrieve User and Survey instances
     try:
-        user = User.objects.get(user_id=user_id)
-        survey = Survey.objects.get(survey_id=survey_id)
+        user = User.objects.get(username=username)
+        survey = Survey.objects.get(film_name=moviename)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
+    
+    print(mood_based_on_video)
+    print(mood_based_on_text)
+    print(watch_likelihood)
 
     # Create StandardQuestionAnswer entry
     standard_answer = StandardQuestionAnswer.objects.create(
@@ -236,13 +323,6 @@ def create_standard_question_answer(request):
 
     return JsonResponse({
         "message": "Standard Question Answer created successfully",
-        "data": {
-            "user_id": user_id,
-            "survey_id": survey_id,
-            "mood_based_on_video": mood_based_on_video,
-            "mood_based_on_text": mood_based_on_text,
-            "watch_likelihood": watch_likelihood
-        }
     }, status=201)
 
 
@@ -403,12 +483,13 @@ def get_filtered_todos(request, user_id: int = None, survey_id: int = None):
 
 
 # DELETE Method to delete a specific ToDo
-@api.delete("/todos/{user_id}/{survey_id}")
-def delete_todo(request, user_id: int, survey_id: int):
+@api.delete("/todos/{username}/{moviename}")
+def delete_todo(request, username: str, moviename: str):
     try:
+       
         # Retrieve and delete the ToDo entry
         todo = ToDo.objects.get(
-            user__user_id=user_id, survey__survey_id=survey_id
+            user__username=username, survey__film_name=moviename
         )
         todo.delete()
         return JsonResponse({"message": "ToDo entry deleted successfully"})
@@ -417,34 +498,3 @@ def delete_todo(request, user_id: int, survey_id: int):
 
 
 
-@api.get("/videoURL")
-def hello(request):
-    demourl = "http://127.0.0.1:8000/media/Star Wars Episode IV_ A New Hope - Trailer.mp4"
-    return {"message": "VideoURL provided", "url": demourl }
-
-# https://www.youtube.com/watch?v=g_j6ILT-X0k&t=460s the reference for most of the code that sends the email
-@api.post("/email")
-def users(request):
-    body = request.body.decode('utf-8')
-    data = json.loads(body)
-
-    user_email = data.get("email")
-    comments = data.get("message")
-    email_password =  os.getenv("EMAIL_PASSWORD")
-    sender_email = "filmanalyzerteam@gmail.com"
-    subject =  "creating a studio account"
-    message = f"{user_email} says {comments}:"
-
-    em = EmailMessage()
-    em['From'] = sender_email
-    em['To'] = sender_email
-    em["Subject"] = subject
-    em.set_content(message)
-
-    context = ssl.create_default_context()
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
-        smtp.login(sender_email, email_password)
-        smtp.sendmail(sender_email, sender_email, em.as_string())
-
-    return {"message": "Success"}

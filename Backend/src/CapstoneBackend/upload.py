@@ -3,6 +3,10 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+import json
+from api.models import *
+from django.http import JsonResponse
+
 
 #https://www.geeksforgeeks.org/create-a-directory-in-python/
 #https://gearheart.io/blog/how-to-upload-files-with-django/
@@ -10,6 +14,13 @@ class VideoUploadForSurveyView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
+    
+        # username = json.loads(request.userID.decode('utf-8'))
+        # print(username)
+        # user = User.objects.get(username=username)
+        # print(user.role)
+        # if user.role == "reviewer":
+        #     return JsonResponse({"message": "Incorrect Role"}, status=400)
         
         # this gets the name and the video itself from the request
         uploaded_file = request.FILES['video']

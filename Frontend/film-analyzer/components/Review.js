@@ -132,51 +132,46 @@ const Review = ({movieName, userName}) => {
         body: JSON.stringify({ question, answer, userName })
       });
   
+      const updatedSubmittedQuestions = [...submittedQuestions];
       if (response.ok) {
         console.log(`Successfully submitted answer for question: ${question}`);
   
-        const updatedSubmittedQuestions = [...submittedQuestions];
         const updatedSubmittedAnswers = [...submittedAnswers];
-        updatedSubmittedQuestions[index] = true; 
-        updatedSubmittedAnswers[index] = answer; 
+        updatedSubmittedQuestions[index] = true;
+        updatedSubmittedAnswers[index] = answer;
         setSubmittedQuestions(updatedSubmittedQuestions);
         setSubmittedAnswers(updatedSubmittedAnswers);
-       
-        
-      // clears values
+  
+        // Clear the answer input
         const updatedAnswers = [...answers];
         updatedAnswers[index] = '';
         setAnswers(updatedAnswers);
         stopRecordingAndPauseVideo();
-        
-        
+  
       } else {
         const data = await response.json();
-        alert(data.message);  
+        alert(data.message);
         if (data.message === "You have already answered this question.") {
-          const updatedSubmittedQuestions = [...submittedQuestions];
-          updatedSubmittedQuestions[index] = true; // Mark question as submitted
+          updatedSubmittedQuestions[index] = true; 
           setSubmittedQuestions(updatedSubmittedQuestions);
-          checkAllQuestionsAnswered(updatedSubmittedQuestions)
-          
         }
       }
+  
+      // Check if all questions are answered in both cases (new answer or already answered)
+      checkAllQuestionsAnswered(updatedSubmittedQuestions);
+  
     } catch (error) {
       console.error("Error submitting answer:", error);
       alert("An error occurred while submitting the answer. Please try again.");
     }
-    
   };
-
-  // this function is just checking if all the questions are answered, they are set to false. this was coded in the useeffect block above the submit question function
-  // once theu are all answered the finaly button will pop up
+  
   const checkAllQuestionsAnswered = (updatedSubmittedQuestions) => {
     if (updatedSubmittedQuestions.every(answered => answered)) {
       setShowFinalButton(true);
     }
   };
-
-
+  
 
   const handleFirstQuestionSubmit = async () => {
     if (!firstQuestionAnswer.trim()) {

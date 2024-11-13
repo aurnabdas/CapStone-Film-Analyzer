@@ -3,9 +3,13 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
 import "../globals.css";
 import NavBar from "../../components/NavBar";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { Button } from "@nextui-org/react";
+
 export default function Review() {
   //-------------------states----------------------------
-  const [userID, setUserId] = useState("2");
+  const [userID, setUserId] = useState("");
   const [files, setFiles] = useState([]);
   const [filename, setFilename] = useState("");
   const [questionlist, setQuestionslist] = useState([]);
@@ -15,10 +19,13 @@ export default function Review() {
   const [videoUrls, setVideoUrls] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const questionsRef = useRef(null);
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
 
   //-----------------------------------------------------
 
   //-------------------functions----------------------------
+
 
   const handleFile = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -26,18 +33,32 @@ export default function Review() {
     setFilename(selectedFiles[0]?.name || ""); // Set filename of the first file selected
   };
 
-  const handleAddQuestion = (e) => {
+  const handleAddQuestion = async (e) => {
     e.preventDefault();
     if (question.trim() === "") {
       alert("Please enter a valid question.");
       return;
     }
+    const response = await fetch ("http://127.0.0.1:8000/api/questions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({question,userID,movie}),
+      });
+  
+      if (response.ok) {
+        console.log("Correct Role");
+      } else {
+        const data = await response.json();
+        console.error("Failed to add question:", data.message);
+      }
 
     setQuestionslist([...questionlist, question]);
     setQuestion("");
   };
 
-  // Fetch questions from the backend
+  
   const fetchQuestions = async () => {
     const response = await fetch("http://127.0.0.1:8000/myapis/questions/", {
       method: "GET",
@@ -45,48 +66,77 @@ export default function Review() {
     if (response.ok) {
       const data = await response.json();
       setQuestionsug(data.questions); // Assuming the API response has `questions` as an array
+
     } else {
       console.error("Failed to fetch questions");
     }
   };
 
-  // Initial fetch of questions on page load
+  
   useEffect(() => {
     fetchQuestions();
-  }, []);
+    if (user?.emailAddresses?.[0]?.emailAddress) {
+        setUserId(user.emailAddresses[0].emailAddress)
+    }
+  }, [isLoaded, user]);
+
+  if (!isLoaded) {
+    return <p>Loading...</p>;
+  }
+
 
   const handleUpload = async () => {
     if (files.length === 0) {
       alert("Please select a video to upload.");
       return;
     }
-
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("video", file);
-    });
-
+  
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/upload-survey-video/",
-        {
-          method: "POST",
-          body: formData,
+      const rolecheck = await fetch("http://127.0.0.1:8000/api/rolecheck", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({userID}),
+      });
+  
+      if (rolecheck.ok) {
+        console.log("Correct Role");
+      } else {
+        const data = await rolecheck.json();
+        console.error("Failed role check:", data.message);
+        if (data.message === "Incorrect Role") {
+          alert("Not Allowed to Create Survey");
+          router.push('/');
+          return; 
         }
-      );
-
+      }
+  
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append("video", file);
+      });
+  
+      
+      const response = await fetch("http://127.0.0.1:8000/upload-survey-video/", {
+        method: "POST",
+        body: formData,
+      });
+  
       if (response.ok) {
         const data = await response.json();
         const fullUrl = `http://127.0.0.1:8000${data.video_url}`;
         setVideoUrls([fullUrl]);
         console.log("Upload successful:", data.video_url);
-
+  
+       
         const surveyData = {
           user_Id: userID,
           film_name: movie,
           videoUrls: fullUrl,
         };
-
+  
+        
         const response1 = await fetch("http://127.0.0.1:8000/api/survey", {
           method: "POST",
           headers: {
@@ -94,12 +144,13 @@ export default function Review() {
           },
           body: JSON.stringify(surveyData),
         });
-
+  
         if (response1.ok) {
           console.log("Survey data saved successfully");
           setIsSubmitted(true);
         } else {
-          console.error("Failed to save survey data");
+          const data = await response1.json();
+          console.error("Failed to save survey data:", data.message);
         }
       } else {
         console.error("Upload failed");
@@ -107,21 +158,75 @@ export default function Review() {
     } catch (error) {
       console.error("Error uploading file:", error);
     }
-
-    setMovie("");
+  
+    console.log(movie)
   };
+  
 
-  const handleAddSuggestedQuestion = (suggestion) => {
-    if (!questionlist.includes(suggestion)) {
-      setQuestionslist([...questionlist, suggestion]);
+  const handleAddSuggestedQuestion = async (suggestion) => {
+    if (!suggestion || !suggestion.trim()) {
+      console.error("Attempted to add an empty question.");
+      return; 
     }
-  };
+
+    if (!questionlist.includes(suggestion)) {
+        console.log("Adding question:", suggestion);
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/questions", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ question: suggestion, userID, movie }),
+            });
+
+            if (response.ok) {
+                console.log("Question added successfully.");
+                setQuestionslist([...questionlist, suggestion]);
+            } else {
+                const data = await response.json();
+                console.error("Failed to add question:", data.message);
+            }
+        } catch (error) {
+            console.error("Error adding question:", error);
+        }
+    }
+};
+
 
   const scrollToQuestions = () => {
     if (questionsRef.current) {
       questionsRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const finishSurvey = async () =>{
+    try{
+        const response = await fetch("http://127.0.0.1:8000/api/todos", {
+            method: "POST",
+            header: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({movie})
+        });
+
+        if(response.ok){
+            alert(`Congrats You Made a Survey for ${movie}`)
+            router.push('/');
+        } 
+        else{
+            const data = await response.json();
+            console.error("Failed to make a TODO entry:", data.message);
+        }
+
+    }
+
+    catch(error){
+        console.error("Error ending survey:", error);
+
+    }
+  }
   //-------------------------------------------------------------
 
   return (
@@ -132,7 +237,7 @@ export default function Review() {
       <NavBar />
 
       <div className="flex flex-col items-center mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        {/* Conditional heading based on isSubmitted */}
+        
         <h1 className="text-4xl font-bold mb-6 text-red-800 border-b-2">
           {isSubmitted ? `${movie}` : "Studio Survey Page"}
         </h1>
@@ -304,7 +409,19 @@ export default function Review() {
             </div>
           </div>
         )}
+        
       </div>
+      {isSubmitted && (
+       <div className="flex justify-center pt-6">
+            <button
+                onClick={finishSurvey}
+                className="mb-4 px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition"
+            >
+            Finish Making Survey
+            </button>
+        </div>
+        )}
+
     </main>
   );
 }

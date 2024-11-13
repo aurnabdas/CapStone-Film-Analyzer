@@ -166,15 +166,12 @@ const Review = ({movieName, userName}) => {
     }
   };
   
-  // Check if all custom questions are answered
   const checkAllQuestionsAnswered = (updatedSubmittedQuestions) => {
     if (updatedSubmittedQuestions.every(answered => answered)) {
       setShowFinalButton(true);
     }
   };
   
-
-
 
   const handleFirstQuestionSubmit = async () => {
     if (!firstQuestionAnswer.trim()) {

@@ -58,7 +58,7 @@ export default function Review() {
     setQuestion("");
   };
 
-  // Fetch questions from the backend
+  
   const fetchQuestions = async () => {
     const response = await fetch("http://127.0.0.1:8000/myapis/questions/", {
       method: "GET",
@@ -72,7 +72,7 @@ export default function Review() {
     }
   };
 
-  // Initial fetch of questions on page load
+  
   useEffect(() => {
     fetchQuestions();
     if (user?.emailAddresses?.[0]?.emailAddress) {
@@ -112,13 +112,12 @@ export default function Review() {
         }
       }
   
-      // Prepare form data
       const formData = new FormData();
       files.forEach((file) => {
         formData.append("video", file);
       });
   
-      // Upload video
+      
       const response = await fetch("http://127.0.0.1:8000/upload-survey-video/", {
         method: "POST",
         body: formData,
@@ -130,14 +129,14 @@ export default function Review() {
         setVideoUrls([fullUrl]);
         console.log("Upload successful:", data.video_url);
   
-        // Prepare survey data
+       
         const surveyData = {
           user_Id: userID,
           film_name: movie,
           videoUrls: fullUrl,
         };
   
-        // Save survey data
+        
         const response1 = await fetch("http://127.0.0.1:8000/api/survey", {
           method: "POST",
           headers: {
@@ -167,7 +166,7 @@ export default function Review() {
   const handleAddSuggestedQuestion = async (suggestion) => {
     if (!suggestion || !suggestion.trim()) {
       console.error("Attempted to add an empty question.");
-      return; // Exit if the suggestion is empty or whitespace only
+      return; 
     }
 
     if (!questionlist.includes(suggestion)) {
@@ -238,7 +237,7 @@ export default function Review() {
       <NavBar />
 
       <div className="flex flex-col items-center mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        {/* Conditional heading based on isSubmitted */}
+        
         <h1 className="text-4xl font-bold mb-6 text-red-800 border-b-2">
           {isSubmitted ? `${movie}` : "Studio Survey Page"}
         </h1>

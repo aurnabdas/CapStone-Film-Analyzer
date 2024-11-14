@@ -1,10 +1,11 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import NavBar from '../components/NavBar'; // Import the NavBar component
-import Features from '../components/Features';
-import Hero from '../components/Hero';
-import Team from '../components/Team';
-import ContactForm from '../components/ContactForm'
+import Head from "next/head";
+import Link from "next/link";
+import NavBar from "../components/NavBar"; // Import the NavBar component
+import Features from "../components/Features";
+import Hero from "../components/Hero";
+import Team from "../components/Team";
+import ContactForm from "../components/ContactForm";
+import TrendingMovies from "../components/TrendingMovies";
 
 export default function Home() {
   return (
@@ -17,11 +18,11 @@ export default function Home() {
       {/* NavBar Component */}
       <NavBar />
 
-    
-    <Hero/>
-    <Features/>
-    {/* <Team/> */}
-    <ContactForm/>
+      <Hero />
+      <Features />
+      {/* <Team/> */}
+      <TrendingMovies />
+      <ContactForm />
     </section>
   );
 }

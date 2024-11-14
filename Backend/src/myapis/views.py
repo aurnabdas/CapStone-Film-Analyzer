@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.conf import settings 
+import requests
 import os
 import google.generativeai as genai
 
@@ -66,5 +68,20 @@ def generate_questions():
             questions = [q.strip() for q in response.text.strip().split("\n") if q.strip()]
             print(questions)
             return questions
+
+
+
+# TMDB function that gets weekly trending movies 
+@api_view(['GET'])
+def get_trending_movies(request):
+    api_key = settings.TMDB_API_KEY
+    url = f"https://api.themoviedb.org/3/trending/movie/week?api_key={api_key}"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        movies = response.json().get('results', [])
+        return Response({'movies': movies}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Failed to fetch trending movies'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

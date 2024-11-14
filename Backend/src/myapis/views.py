@@ -53,26 +53,22 @@ def get_questions(request):
     return Response({"error": "No questions available at the moment."}, status=status.HTTP_400_BAD_REQUEST)
 
 def generate_questions():
-    try:
         genai.configure(api_key=os.environ["API_KEY"])
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
-            "Create 3 engaging questions to gather user opinions and emotional reactions to a trailer. "
-            "Questions should cover their overall impression, emotional experience, and interest in watching it in theaters. "
-            "Questions should capture a mix of personal reactions, interest level, and emotional impact."
-            "Do not include what the question is about, just include the questions"
-        )
+        "Create 3 engaging questions to gather user opinions and emotional reactions to a trailer. Do not label the questions with numbers, split the questions with spaces "
+        "Questions should cover their overall impression, emotional experience, and interest in watching it in theaters. "
+        "Questions should capture a mix of personal reactions, interest level, and emotional impact."
+        "Do not include what the question is about, just include the questions"
+)
 
         if response and response.text:
-            # Split response into individual questions
-            questions = response.text.strip().split("\n")
+            # Split response into individual questions and filter out any empty strings
+            questions = [q.strip() for q in response.text.strip().split("\n") if q.strip()]
+            print(questions)
             return questions
 
-    except Exception as e:
-        print(f"Error generating questions: {e}")
-    
-    return None  # Return None if there is an error
 
 
 # TMDB function that gets weekly trending movies 
@@ -87,4 +83,5 @@ def get_trending_movies(request):
         return Response({'movies': movies}, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'Failed to fetch trending movies'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 

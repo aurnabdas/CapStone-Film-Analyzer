@@ -106,24 +106,43 @@ def users(request, email: str):
     print(email)
     return {"message": "Success"}
 
+@api.post("/rolecheck")
+def rolecheck(request):
+    
+    body = json.loads(request.body.decode('utf-8'))
+    print(body)
+    user_id = body.get("userID")
+    print(user_id)
+    try:
+        user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
+        print(user.role)
+        if user.role == "reviewer":
+            return JsonResponse({"message": "Incorrect Role"}, status=400)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    
+    return {"message": "Correct Role"}
+
+
+
+
+
 #Post request to create survey. UserId Must exist in User Table and SurveyId Must be unique
 @api.post("/survey")
 def create_survey_entry(request):
     body = json.loads(request.body.decode('utf-8'))
     
-    # user_id = body.get("user_Id") // i need to create a api call to get the id of a user given their username
-    user_id = 22
-    survey_id = body.get("survey_Id")
+    user_id = body.get("user_Id") # i need to create a api call to get the id of a user given their username
     film_name = body.get("film_name")
     video_url = body.get("videoUrls")
 
     # Assuming `user_id` is the correct field in User model
     try:
-        user = User.objects.get(user_id=user_id)  # Retrieve the User instance using `user_id`
+        user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    Survey.objects.create(survey_id=survey_id, film_name=film_name, video_url=video_url, user_id=user_id)
+    Survey.objects.create(film_name=film_name, video_url=video_url, user_id=user.user_id)
 
     # Print to verify (remove in production)
     print(f"User ID: {user_id}, Film Name: {film_name}, Video URL: {video_url}")
@@ -144,6 +163,7 @@ def delete_survey_entry(request, survey_id: int):
 @api.post("/custom-question-answers")
 def create_custom_question_answer(request):
     body = json.loads(request.body.decode('utf-8'))
+    print(body)
 
     userName = body.get("userName")
     question = body.get("question")
@@ -241,20 +261,23 @@ def delete_custom_question_answer(request, user_id: int, survey_id: int, questio
 @api.post("/questions")
 def create_question(request):
     body = json.loads(request.body.decode('utf-8'))
-    question_text = body.get("question_text")
-
-    if not question_text:
-        return JsonResponse({"error": "question_text is required"}, status=400)
+    print(body)
+    question_text = body.get("question")
+    user_ID = body.get("userID")
+    movie = body.get("movie")
+    
 
     question = Question.objects.create(question_text=question_text)
+    user = User.objects.get(username=user_ID)
+    
+    survey = Survey.objects.get(film_name=movie, user = user)
+    
+    # print(survey.survey_id)
+    survey_question = SurveyQuestion.objects.create(survey=survey,question=question)
+    # todo_entry = ToDo.objects.create(user=user, survey=survey)
     
     return JsonResponse({
-        "message": "Question created successfully",
-        "data": {
-            "question_id": question.question_id,
-            "question_text": question.question_text
-        }
-    }, status=201)
+        "message": "Question created successfully",}, status=201)
 
 # DELETE Method to delete a specific Question
 @api.delete("/questions/{question_id}")
@@ -434,31 +457,23 @@ from django.http import JsonResponse
 @api.post("/todos")
 def create_todo(request):
     body = json.loads(request.body.decode('utf-8'))
-
-    user_id = body.get("user_id")
-    survey_id = body.get("survey_id")
+    # print(body)
+    movie = body.get("movie")
 
     # Retrieve User and Survey instances
     try:
-        user = User.objects.get(user_id=user_id)
-        survey = Survey.objects.get(survey_id=survey_id)
+        reviwers = User.objects.filter(role="reviewer").distinct()
+        survey = Survey.objects.get(film_name=movie)
+        for reviewer in reviwers:
+            ToDo.objects.create(user=reviewer,survey=survey)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
 
-    # Create ToDo entry
-    todo = ToDo.objects.create(
-        user=user,
-        survey=survey
-    )
 
     return JsonResponse({
         "message": "ToDo created successfully",
-        "data": {
-            "user_id": user_id,
-            "survey_id": survey_id
-        }
     }, status=201)
 
 

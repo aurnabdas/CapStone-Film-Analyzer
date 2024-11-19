@@ -32,10 +32,10 @@ const NavBar = () => {
           {isMounted && (
             <SignedIn>
               <Link href="/survey" className="text-white hover:text-[#FFD700] transition-colors">
-                Survey
+                Create Survey
               </Link>
-              <Link href="/review" className="text-white hover:text-[#FFD700] transition-colors">
-                Review
+              <Link href="/todo" className="text-white hover:text-[#FFD700] transition-colors">
+                Avaliable Survey's
               </Link>
             </SignedIn>
           )}

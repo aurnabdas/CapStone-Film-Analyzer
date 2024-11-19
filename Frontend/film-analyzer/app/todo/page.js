@@ -5,6 +5,7 @@ import "../globals.css";
 import NavBar from '../../components/NavBar';
 import { Tab } from '@nextui-org/react';
 import Link from 'next/link';
+import Gif from "../../components/Gif"
 
  function ToDo() {
     const { user, isLoaded } = useUser();
@@ -42,7 +43,10 @@ import Link from 'next/link';
     //this was causing me so much issues, i needed this loading statement, for clerk to load in the user object
     // and this had to be put after the useeffect, this issue was resolved from a stack overflow forum: https://stackoverflow.com/questions/55622768/uncaught-invariant-violation-rendered-more-hooks-than-during-the-previous-rende
     if (!isLoaded) {
-        return <p>Loading...</p>;
+        return <Gif
+        gifSource="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZndkM3h2OHZiZm1ocjNqNDJ4eWpjZmZibmlibW5vZGswdjZvMjZrbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/FEXGAddVac7K4VkY9C/giphy.webp"
+        backgroundColor="rgb(153 27 27)"
+      />;
       }
 
       return (

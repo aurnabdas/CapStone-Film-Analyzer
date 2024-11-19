@@ -95,8 +95,8 @@ def users(request):
 def users(request):
     body = request.body.decode('utf-8')
     email = json.loads(body)
-    User.objects.create(username= body, role = "reviewer")
-    print(body)
+    User.objects.create(username= email, role = "reviewer")
+    print(email)
     return {"message": "Success"}
 
 @api.post("/users/studio/{email}")
@@ -280,12 +280,12 @@ def create_question(request):
         "message": "Question created successfully",}, status=201)
 
 # DELETE Method to delete a specific Question
-@api.delete("/questions/{question_id}")
-def delete_question(request, question_id: int):
+@api.delete("/questions/{question_text}")
+def delete_question(request, question_text: str):
     try:
-        question = Question.objects.get(question_id=question_id)
+        question = Question.objects.get(question_text=question_text)
         question.delete()
-        return JsonResponse({"message": f"Question with ID {question_id} deleted successfully"})
+        return JsonResponse({"message": f"Question with ID {question_text} deleted successfully"})
     except Question.DoesNotExist:
         return JsonResponse({"error": "Question not found"}, status=404)
 

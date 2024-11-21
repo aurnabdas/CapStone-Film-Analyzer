@@ -38,11 +38,15 @@ const Team = () => {
     <section className="bg-[#7A1C23] min-h-screen text-white body-font flex items-center justify-center relative">
       <div className="container px-5 py-24 mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
-          <h1 className="text-2xl font-medium title-font mb-4 tracking-widest" style={{ color: "#D4A03A" }}>
+          <h1
+            className="text-2xl font-medium title-font mb-4 tracking-widest"
+            style={{ color: "#D4A03A" }}
+          >
             OUR TEAM
           </h1>
           <p className="lg:w-2/3 mx-auto leading-relaxed text-base text-white">
-            Meet our team of professionals, ensuring the best results for our users.
+            Meet our team of professionals, ensuring the best results for our
+            users.
           </p>
         </div>
         <div className="flex flex-wrap -m-4">
@@ -55,14 +59,24 @@ const Team = () => {
                   src={teamMember.image}
                 />
                 <div className="flex-grow sm:pl-8">
-                  <h2 className="title-font font-medium text-lg" style={{ color: "#D4A03A" }}>
+                  <h2
+                    className="title-font font-medium text-lg"
+                    style={{ color: "#D4A03A" }}
+                  >
                     {teamMember.name}
                   </h2>
                   <h3 className="text-white mb-3">{teamMember.designation}</h3>
-                  <p className="mb-4 text-white">Expert in {teamMember.designation}, ensuring high-quality work.</p>
+                  <p className="mb-4 text-white">
+                    Expert in {teamMember.designation}, ensuring high-quality
+                    work.
+                  </p>
                   <span className="inline-flex">
                     {/* LinkedIn Icon with Link */}
-                    <Link href={teamMember.linkedin} target="_blank" className="text-white">
+                    <Link
+                      href={teamMember.linkedin}
+                      target="_blank"
+                      className="text-white"
+                    >
                       <FontAwesomeIcon icon={faLinkedin} className="w-5 h-5" />
                     </Link>
                     <Link href="#" className="ml-2 text-white">

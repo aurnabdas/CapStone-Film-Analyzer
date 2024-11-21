@@ -6,6 +6,7 @@ import NavBar from "../../components/NavBar";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/react";
+import Gif from "../../components/Gif"
 
 export default function Review() {
   //-------------------states----------------------------
@@ -81,7 +82,10 @@ export default function Review() {
   }, [isLoaded, user]);
 
   if (!isLoaded) {
-    return <p>Loading...</p>;
+    return <Gif
+        gifSource="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMGFpdjNidm02ZXhiZTRiZDZ6a25yeGQxcjJqaHNpbTJzc2RtanloMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BPJmthQ3YRwD6QqcVD/giphy.webp"
+        backgroundColor="rgb(153 27 27)"
+      />;
   }
 
 
@@ -227,6 +231,35 @@ export default function Review() {
 
     }
   }
+
+  const handleDeleteQuestion = async (question, index) => {
+    try {
+
+      const response = await fetch(`http://127.0.0.1:8000/api/questions/${encodeURIComponent(question)}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        console.log("Question deleted successfully");
+        
+        // this was the original code that was set in the onclick brackets
+        const updatedList = questionlist.filter((_, i) => i !== index);
+        setQuestionslist(updatedList);
+      } else {
+        const data = await response.json();
+        console.error("Failed to delete question:", data.message);
+        alert(data.message || "Failed to delete the question.");
+      }
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      alert("An error occurred while deleting the question. Please try again.");
+    }
+  };
+
+  
   //-------------------------------------------------------------
 
   return (
@@ -387,19 +420,13 @@ export default function Review() {
             </h3>
             <div className="w-full max-w-lg bg-white bg-opacity-80 p-4 rounded-lg shadow-md border-2 border-gray-300">
               <ul className="w-full list-none space-y-2">
-                {questionlist.map((q, index) => (
+                {questionlist.map((question, index) => (
                   <li
                     key={index}
-                    onClick={() => {
-                      // Remove the clicked question from the list
-                      const updatedList = questionlist.filter(
-                        (_, i) => i !== index
-                      );
-                      setQuestionslist(updatedList);
-                    }}
+                    onClick={() => handleDeleteQuestion(question, index)}
                     className="p-2 bg-yellow-200 text-gray-900 font-medium rounded-lg border border-gray-300 cursor-pointer transition transform hover:scale-105 hover:shadow-lg group"
                   >
-                    {q}
+                    {question}
                     <span className="block mt-1 text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
                       Click to remove!
                     </span>

@@ -13,11 +13,13 @@ export default function Review() {
   const [userID, setUserId] = useState("");
   const [files, setFiles] = useState([]);
   const [filename, setFilename] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState(""); // Add this state
   const [questionlist, setQuestionslist] = useState([]);
   const [questions, setQuestionsug] = useState([]);
   const [question, setQuestion] = useState("");
   const [movie, setMovie] = useState("");
   const [videoUrls, setVideoUrls] = useState([]);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const questionsRef = useRef(null);
   const { user, isLoaded } = useUser();
@@ -33,6 +35,13 @@ export default function Review() {
     setFiles(selectedFiles);
     setFilename(selectedFiles[0]?.name || ""); // Set filename of the first file selected
   };
+
+  const handleThumbnailFile = (e) => {
+    const file = e.target.files[0];
+    setThumbnailFile(file); // Set the thumbnail file in state
+    
+  };
+  
 
   const handleAddQuestion = async (e) => {
     e.preventDefault();
@@ -94,6 +103,12 @@ export default function Review() {
       alert("Please select a video to upload.");
       return;
     }
+
+    if (!thumbnailFile) {
+      alert("Please select a thumbnail to upload.");
+      return;
+    }
+  
   
     try {
       const rolecheck = await fetch("http://127.0.0.1:8000/api/rolecheck", {
@@ -120,6 +135,7 @@ export default function Review() {
       files.forEach((file) => {
         formData.append("video", file);
       });
+      formData.append("thumbnail", thumbnailFile); // Add thumbnail file
   
       
       const response = await fetch("http://127.0.0.1:8000/upload-survey-video/", {
@@ -130,7 +146,10 @@ export default function Review() {
       if (response.ok) {
         const data = await response.json();
         const fullUrl = `http://127.0.0.1:8000${data.video_url}`;
+        const fullThumbnailUrl = `http://127.0.0.1:8000${data.thumbnail_url}`; // Assuming backend returns this
         setVideoUrls([fullUrl]);
+        setThumbnailFile([fullThumbnailUrl]);
+        setThumbnailUrl(data.thumbnail_url);
         console.log("Upload successful:", data.video_url);
   
        
@@ -138,6 +157,8 @@ export default function Review() {
           user_Id: userID,
           film_name: movie,
           videoUrls: fullUrl,
+          thumbnailUrls: fullThumbnailUrl
+          
         };
   
         
@@ -275,6 +296,16 @@ export default function Review() {
           {isSubmitted ? `${movie}` : "Studio Survey Page"}
         </h1>
 
+        {/* Thumbnail Display */}
+        <div className="flex flex-col items-center justify-center w-full mb-6">
+        {isSubmitted && thumbnailFile && (
+      <img
+        src={(thumbnailFile)} // Create a URL for the selected file
+        alt="Uploaded Thumbnail"
+        className="w-full max-w-xs h-auto object-cover mb-4"
+      />
+    )}
+</div>
         {/* Video Player */}
         <div className="flex flex-col items-center justify-center w-full mb-6">
           {videoUrls.length > 0 &&
@@ -302,6 +333,7 @@ export default function Review() {
             File should be of format .mp4, .avi, .mov or .mkv
           </p>
         </div>
+        
         <form
           action="#"
           className="relative w-4/5 max-w-xs mb-10 bg-white p-4 rounded-lg shadow-lg"
@@ -319,6 +351,49 @@ export default function Review() {
             <p className="text-sm text-gray-500 mb-2">
               Drag & Drop or Select Files
             </p>
+
+            <svg
+              className="w-6 h-6 text-indigo-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+            </svg>
+          </label>
+        </form>
+
+
+
+        <div className="mt-10 mb-10 text-center">
+          <h2 className="text-2xl font-semibold mb-2 border-b-2 border-gray-300">
+            {isSubmitted
+              ? "Want to reupload another thumbnail?"
+              : "Upload thumbnail here"}
+          </h2>
+          <p className="text-xs text-gray-500">
+            File should be of format .pdf or .jpg
+          </p>
+        </div>
+
+      {/*Thumbnail upload*/}
+        <form
+          action="#"
+          className="relative w-4/5 max-w-xs mb-10 bg-white p-4 rounded-lg shadow-lg"
+        >
+          <input
+            type="file"
+            id="trailer-file-upload"
+            className="hidden"
+            onChange={handleThumbnailFile}
+          />
+          <label
+            htmlFor="trailer-file-upload"
+            className="flex flex-col items-center cursor-pointer"
+          >
+            <p className="text-sm text-gray-500 mb-2">
+              Drag & Drop or Select Files
+            </p>
+            
             <svg
               className="w-6 h-6 text-indigo-400"
               fill="currentColor"
@@ -337,6 +412,18 @@ export default function Review() {
             </p>
             <p className="text-sm text-green-600 mt-1">
               Ready to upload! Click submit to upload.
+            </p>
+          </div>
+        )}
+
+        {/* Display selected filename */}
+        {thumbnailFile && (
+          <div className="text-center">
+            <p className="text-sm text-gray-800 mt-2">
+              Selected file: <span className="font-semibold">{thumbnailFile.name}</span>
+            </p>
+            <p className="text-sm text-green-600 mt-1">
+              Thumbnail uploaded!
             </p>
           </div>
         )}

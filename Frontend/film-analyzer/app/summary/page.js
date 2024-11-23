@@ -62,45 +62,45 @@ export default function Summary() {
       style={{ backgroundColor: "#f5f5dc", fontFamily: "Georgia, serif" }}
     >
       <NavBar />
-      {/* <div>
-        <h3 className="text-blue-800">Logged in as: {username}</h3>
-      </div> */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {surveys.length > 0 ? (
-          surveys.map((survey, index) => (
-            <div
-              key={index}
-              className="relative bg-white shadow-lg rounded-lg overflow-hidden group"
-            >
-              {/* Video preview */}
-              <div className="relative">
-                <video
-                  className="w-full h-40 object-cover group-hover:opacity-100 opacity-0 transition-opacity duration-300"
-                  src={survey.survey.video_url}
-                  muted
-                  autoPlay
-                  loop
-                  playsInline
-                ></video>
-                <img
-                  className="absolute top-0 left-0 w-full h-40 object-cover group-hover:opacity-0 transition-opacity duration-300"
-                  src="/path/to/default-thumbnail.jpg"
-                  alt="Survey Thumbnail"
-                />
+          surveys.map((survey, index) => {
+            // Debugging: Log the thumbnail URL
+            return (
+              <div
+                key={index}
+                className="relative bg-white shadow-lg rounded-lg overflow-hidden group"
+              >
+                {/* Video preview */}
+                <div className="relative">
+                  <video
+                    className="w-full h-40 object-cover group-hover:opacity-100 opacity-0 transition-opacity duration-300"
+                    src={survey.survey.video_url}
+                    muted
+                    autoPlay
+                    loop
+                    playsInline
+                  ></video>
+                  <img
+                    className="absolute top-0 left-0 w-full h-40 object-cover group-hover:opacity-0 transition-opacity duration-300"
+                    src={survey.survey.thumbnail_url || "/path/to/default-thumbnail.jpg"}
+                    alt={`Thumbnail for ${survey.survey.film_name}`}
+                  />
+                </div>
+                {/* Survey details */}
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-red-800">
+                    <a href={`/survey/${survey.survey.survey_id}`}>
+                      {survey.survey.film_name}
+                    </a>
+                  </h3>
+                  <p className="text-gray-600">
+                    Survey ID: {survey.survey.survey_id}
+                  </p>
+                </div>
               </div>
-              {/* Survey details */}
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-red-800">
-                  <a href={`/survey/${survey.survey.survey_id}`}>
-                    {survey.survey.film_name}
-                  </a>
-                </h3>
-                <p className="text-gray-600">
-                  Survey ID: {survey.survey.survey_id}
-                </p>
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p>No surveys found for this user.</p>
         )}

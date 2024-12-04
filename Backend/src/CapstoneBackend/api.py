@@ -123,7 +123,20 @@ def rolecheck(request):
     
     return {"message": "Correct Role"}
 
-
+@api.post("/navbar/rolecheck")
+def rolecheck(request):
+    
+    body = json.loads(request.body.decode('utf-8'))
+    print(body)
+    user_id = body.get("userID")
+    print(user_id)
+    try:
+        user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
+        print(user.role)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    
+    return {"message": user.role}
 
 
 

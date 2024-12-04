@@ -7,6 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/react";
 import Gif from "../../components/Gif"
+import Swal from 'sweetalert2'
 
 export default function Review() {
   //-------------------states----------------------------
@@ -21,6 +22,7 @@ export default function Review() {
   const [videoUrls, setVideoUrls] = useState([]);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [preLoaded, setPreSubmit] = useState(true);
   const questionsRef = useRef(null);
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -46,7 +48,14 @@ export default function Review() {
   const handleAddQuestion = async (e) => {
     e.preventDefault();
     if (question.trim() === "") {
-      alert("Please enter a valid question.");
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please enter a valid question.",
+            showConfirmButton: false,
+            timer: 1750
+          });  
+      
       return;
     }
     const response = await fetch ("http://127.0.0.1:8000/api/questions", {
@@ -100,12 +109,25 @@ export default function Review() {
 
   const handleUpload = async () => {
     if (files.length === 0) {
-      alert("Please select a video to upload.");
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please select a video to upload.",
+            showConfirmButton: false,
+            timer: 1750
+          });        
       return;
     }
 
     if (!thumbnailFile) {
-      alert("Please select a thumbnail to upload.");
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please select a thumbnail to upload.",
+            showConfirmButton: false,
+            timer: 1750
+          });
+      
       return;
     }
   
@@ -125,7 +147,14 @@ export default function Review() {
         const data = await rolecheck.json();
         console.error("Failed role check:", data.message);
         if (data.message === "Incorrect Role") {
-          alert("Not Allowed to Create Survey");
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Not Allowed to Create Survey",
+                showConfirmButton: false,
+                timer: 1750
+              });
+          
           router.push('/');
           return; 
         }
@@ -185,6 +214,7 @@ export default function Review() {
     }
   
     console.log(movie)
+    setPreSubmit(false);
   };
   
 
@@ -237,7 +267,13 @@ export default function Review() {
         });
 
         if(response.ok){
-            alert(`Congrats You Made a Survey for ${movie}`)
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: `Congrats You Made a Survey for ${movie}`,
+                showConfirmButton: false,
+                timer: 1750
+              });
             router.push('/');
         } 
         else{
@@ -272,11 +308,23 @@ export default function Review() {
       } else {
         const data = await response.json();
         console.error("Failed to delete question:", data.message);
-        alert(data.message || "Failed to delete the question.");
+        Swal.fire({
+            icon: "error",
+            title: data.message,
+            text: "Failed to delete data.",
+            showConfirmButton: false,
+            timer: 1750
+          });
       }
     } catch (error) {
       console.error("Error deleting question:", error);
-      alert("An error occurred while deleting the question. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: data.message,
+        text: "An error occurred while submitting the data. Please try again.",
+        showConfirmButton: false,
+        timer: 1750
+      });
     }
   };
 
@@ -296,16 +344,7 @@ export default function Review() {
           {isSubmitted ? `${movie}` : "Studio Survey Page"}
         </h1>
 
-        {/* Thumbnail Display */}
-        <div className="flex flex-col items-center justify-center w-full mb-6">
-        {isSubmitted && thumbnailFile && (
-      <img
-        src={(thumbnailFile)} // Create a URL for the selected file
-        alt="Uploaded Thumbnail"
-        className="w-full max-w-xs h-auto object-cover mb-4"
-      />
-    )}
-</div>
+        
         {/* Video Player */}
         <div className="flex flex-col items-center justify-center w-full mb-6">
           {videoUrls.length > 0 &&
@@ -320,6 +359,19 @@ export default function Review() {
                 />
               </div>
             ))}
+        </div>
+
+        {preLoaded && (<>
+
+        {/* Thumbnail Display */}
+        <div className="flex flex-col items-center justify-center w-full mb-6">
+        {isSubmitted && thumbnailFile && (
+      <img
+        src={(thumbnailFile)} // Create a URL for the selected file
+        alt="Uploaded Thumbnail"
+        className="w-full max-w-xs h-auto object-cover mb-4"
+            />
+            )}
         </div>
 
         {/* File Upload Form */}
@@ -449,6 +501,12 @@ export default function Review() {
         >
           Submit
         </button>
+        
+        </>)}
+
+        
+
+        
 
         {/* Conditionally render the questions section */}
         {isSubmitted && (

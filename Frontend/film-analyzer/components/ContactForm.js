@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import validator from "validator";
+import Swal from 'sweetalert2'
 
 export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
+  
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -31,9 +33,23 @@ export default function ContactForm() {
     if (response.ok) {
       setEmail("");
       setMessage("");
-      alert("Message sent successfully!");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Message sent succesfully!",
+        showConfirmButton: false,
+        timer: 1750
+      });
+      
     } else {
-      alert("Failed to send message. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Failed to send message. Please try again.",
+        showConfirmButton: false,
+        timer: 1750
+      });
+      
     }
   };
 

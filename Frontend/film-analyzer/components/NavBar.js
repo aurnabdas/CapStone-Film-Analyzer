@@ -3,13 +3,49 @@ import { useEffect, useState } from "react";
 import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { AiOutlineMenu } from "react-icons/ai";
 import { Navbar, Link } from "@nextui-org/react";
+import { useUser } from "@clerk/nextjs";
 
 const NavBar = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const { user, isLoaded } = useUser();
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    if (user?.emailAddresses?.[0]?.emailAddress) {
+      setUsername(user.emailAddresses[0].emailAddress);
+    }
+  }, [isLoaded, user]);
 
   useEffect(() => {
     setIsMounted(true); // Ensure that the component is fully mounted
   }, []);
+
+  const fetchRole = async () => {
+    if (!username) return;
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/navbar/rolecheck", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userID: username }),
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setRole(data.message);
+      } 
+    } catch (error) {
+      console.error("Error fetching surveys:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (username) {
+      fetchRole();
+    }
+  }, [username]);
 
   return (
     <nav className="bg-[#7E0B20] w-full fixed top-0 left-0 z-50">
@@ -31,13 +67,23 @@ const NavBar = () => {
           </Link>
           {isMounted && (
             <SignedIn>
+            {/* Conditionally Render Links Based on Role */}
+            {role === "studio" && (
               <Link href="/survey" className="text-white hover:text-[#FFD700] transition-colors">
                 Create Survey
               </Link>
+            )}
+            {role === "reviewer" && (
               <Link href="/todo" className="text-white hover:text-[#FFD700] transition-colors">
-                Avaliable Survey's
+                Available Surveys
               </Link>
-            </SignedIn>
+            )}
+            {role === "studio" && (
+              <Link href="/summary" className="text-white hover:text-[#FFD700] transition-colors">
+                Survey Results
+              </Link>
+            )}
+          </SignedIn>
           )}
         </div>
 

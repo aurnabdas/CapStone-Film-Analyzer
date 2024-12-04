@@ -7,6 +7,8 @@ import Script from 'next/script';
 import ReactPlayer from 'react-player';
 import NavBar from './NavBar';
 import QuestionBox from './QuestionsBox'
+import Swal from 'sweetalert2'
+
 
 
 const Review = ({movieName, userName}) => {
@@ -119,7 +121,11 @@ const Review = ({movieName, userName}) => {
   
     // Checks for empty answers from the user
     if (!answer.trim()) {
-      alert("Answer cannot be blank.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Answer was left blank... Try Again",
+      });
       return;
     }
   
@@ -150,7 +156,14 @@ const Review = ({movieName, userName}) => {
   
       } else {
         const data = await response.json();
-        alert(data.message);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "You have already answered this question.",
+          showConfirmButton: false,
+          timer: 1750
+        });
+        
         if (data.message === "You have already answered this question.") {
           updatedSubmittedQuestions[index] = true; 
           setSubmittedQuestions(updatedSubmittedQuestions);
@@ -162,7 +175,14 @@ const Review = ({movieName, userName}) => {
   
     } catch (error) {
       console.error("Error submitting answer:", error);
-      alert("An error occurred while submitting the answer. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "An error occurred while submitting the answer. Please try again.",
+        showConfirmButton: false,
+        timer: 1750
+      });
+      
     }
   };
   
@@ -175,10 +195,23 @@ const Review = ({movieName, userName}) => {
 
   const handleFirstQuestionSubmit = async () => {
     if (!firstQuestionAnswer.trim()) {
-      alert("Answer cannot be blank.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Answer was left blank... Try Again",
+        showConfirmButton: false,
+        timer: 1750
+      });
       return;
     }
-    alert("First answer saved successfully.");
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "First answer saved successfully.",
+      showConfirmButton: false,
+      timer: 1750
+    });
+    
     setFirstQuestionAnswered(true);
   
       
@@ -186,11 +219,23 @@ const Review = ({movieName, userName}) => {
 
   const handleSecondQuestionSubmit = () => {
     if (isNaN(secondQuestionAnswer) || secondQuestionAnswer < 1 || secondQuestionAnswer > 10) {
-      alert("Please enter a rating between 1 and 10.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please enter a rating between 1 and 10.",
+        showConfirmButton: false,
+        timer: 1750
+      });
       return;
     }
   
-    alert("Second answer saved successfully.");
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Second answer saved successfully.",
+      showConfirmButton: false,
+      timer: 1750
+    });
     
     setSecondQuestionAnswered(true);
     
@@ -217,15 +262,34 @@ const Review = ({movieName, userName}) => {
           router.push('/todo'); 
         } else {
           const data = await deleteResponse.json();
-          alert(data.message || "Failed to delete data.");
+          Swal.fire({
+            icon: "error",
+            title: data.message,
+            text: "Failed to delete data.",
+            showConfirmButton: false,
+            timer: 1750
+          });
+          
         }
       } else {
         const data = await response.json();
-        alert(data.message || "Failed to submit data.");
+        Swal.fire({
+          icon: "error",
+          title: data.message,
+          text: "Failed to delete data.",
+          showConfirmButton: false,
+          timer: 1750
+        });
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      alert("An error occurred while submitting the data. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: data.message,
+        text: "An error occurred while submitting the data. Please try again.",
+        showConfirmButton: false,
+        timer: 1750
+      });
     }
 
     
@@ -237,6 +301,7 @@ const Review = ({movieName, userName}) => {
   return (
     <div className="relative bg-cover bg-center text-white" style={{ backgroundImage: "url('/images/reviewBackground.jpg')", backgroundAttachment: "fixed", backgroundPosition: "center top", height: "100vh" }}>
       <NavBar />
+      <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured} />
       <section className="flex items-center justify-center h-screen" style={{ background: 'rgba(0, 0, 0, 0.6)' }}>
         <div className="container mx-auto text-center">
           <Script src="/face-api.min.js" strategy="beforeInteractive" />
@@ -350,7 +415,7 @@ const Review = ({movieName, userName}) => {
 
     
       
-      <FaceTest isRecording={isRecording} onEmotionsCaptured={handleEmotionsCaptured} />
+      
     </div>
   );  
     

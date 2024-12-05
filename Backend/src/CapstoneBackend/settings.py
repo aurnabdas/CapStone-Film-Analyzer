@@ -197,4 +197,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'CapstoneBackend', 'uploads')
 
 TMDB_API_KEY = os.getenv("TMDB_API")
 
+BEARER_TOKEN = os.getenv("TMDB_READ_ACCESS_TOKEN")
+
+# OMDB API KEY
+OMDB_API_KEY = os.getenv("OMDB_API_KEY")
+
 

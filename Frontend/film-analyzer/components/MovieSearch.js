@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-const MovieSearch = () => {
+const OMDBSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [movie, setMovie] = useState(null); // Store a single movie
+  const [movie, setMovie] = useState(null); // Store movie details
   const [error, setError] = useState("");
 
   const handleSearch = async () => {
@@ -13,27 +13,29 @@ const MovieSearch = () => {
       return;
     }
 
-    setError(""); // Clear any existing errors
+    setError("");
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/myapis/search-movie?query=${encodeURIComponent(
+        `http://127.0.0.1:8000/myapis/search-omdb-movie-with-backdrop?query=${encodeURIComponent(
           searchQuery
         )}`
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.movies.length > 0) {
-          setMovie(data.movies[0]); // Get the first movie result
+        if (data.movie) {
+          setMovie(data.movie); // Save movie data
         } else {
-          setError("No movies found for your search.");
+          setError("No movie found for your search.");
           setMovie(null);
         }
       } else {
         setError("Failed to fetch movie details. Please try again.");
+        setMovie(null);
       }
     } catch (err) {
       setError("An error occurred while fetching movie details.");
+      setMovie(null);
     }
   };
 
@@ -42,15 +44,17 @@ const MovieSearch = () => {
       className="min-h-screen bg-cover bg-center flex items-center justify-center"
       style={{
         backgroundImage: movie
-          ? `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`
-          : "linear-gradient(to bottom, #450a0a, #7E1328)",
+          ? `url(${movie.Backdrop})` // Use the backdrop image from TMDB
+          : "linear-gradient(to bottom, #450a0a, #7E1328)", // Default background
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       <div className="bg-black bg-opacity-70 text-white p-8 rounded-lg shadow-lg w-4/5 md:w-3/5 lg:w-2/5">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gold">Movie Search</h1>
+          <h1 className="text-3xl font-bold text-gold">OMDB Movie Search</h1>
           <p className="text-gray-300 mt-2">
-            Find detailed information about your favorite movies.
+            Search for movies and see detailed information about them.
           </p>
         </div>
         <div className="mb-6">
@@ -75,28 +79,36 @@ const MovieSearch = () => {
             <div className="flex flex-col md:flex-row items-center">
               {/* Movie Poster */}
               <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
+                src={movie.Poster}
+                alt={movie.Title}
                 className="w-48 h-72 object-cover rounded-md shadow-lg"
               />
               <div className="md:ml-6 mt-4 md:mt-0 text-left">
                 {/* Movie Details */}
-                <h2 className="text-2xl font-bold text-gold">{movie.title}</h2>
+                <h2 className="text-2xl font-bold text-gold">{movie.Title}</h2>
                 <p className="text-sm text-gray-300 mt-2">
-                  <span className="font-semibold">Overview:</span>{" "}
-                  {movie.overview}
+                  <span className="font-semibold">Year:</span> {movie.Year}
                 </p>
                 <p className="text-sm text-gray-300 mt-2">
-                  <span className="font-semibold">Popularity:</span>{" "}
-                  {movie.popularity}
+                  <span className="font-semibold">Rated:</span> {movie.Rated}
                 </p>
                 <p className="text-sm text-gray-300 mt-2">
-                  <span className="font-semibold">Release Date:</span>{" "}
-                  {movie.release_date}
+                  <span className="font-semibold">Released:</span>{" "}
+                  {movie.Released}
                 </p>
                 <p className="text-sm text-gray-300 mt-2">
-                  <span className="font-semibold">Rating:</span>{" "}
-                  {movie.vote_average} ({movie.vote_count} votes)
+                  <span className="font-semibold">Runtime:</span>{" "}
+                  {movie.Runtime}
+                </p>
+                <p className="text-sm text-gray-300 mt-2">
+                  <span className="font-semibold">Genre:</span> {movie.Genre}
+                </p>
+                <p className="text-sm text-gray-300 mt-2">
+                  <span className="font-semibold">Director:</span>{" "}
+                  {movie.Director}
+                </p>
+                <p className="text-sm text-gray-300 mt-2">
+                  <span className="font-semibold">Plot:</span> {movie.Plot}
                 </p>
               </div>
             </div>
@@ -107,4 +119,4 @@ const MovieSearch = () => {
   );
 };
 
-export default MovieSearch;
+export default OMDBSearch;

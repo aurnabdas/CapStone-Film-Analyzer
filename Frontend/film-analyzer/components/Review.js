@@ -33,6 +33,7 @@ const Review = ({movieName, userName}) => {
   const [firstQuestionAnswered, setFirstQuestionAnswered] = useState(false);
   const [secondQuestionAnswered, setSecondQuestionAnswered] = useState(false);
   const [showFinalButton, setShowFinalButton] = useState(false);
+  
 
 
   useEffect(() => {
@@ -87,9 +88,27 @@ const Review = ({movieName, userName}) => {
   }, [questions]);
 
   const handleEmotionsCaptured = (capturedEmotions) => {
-    setEmotions((prevEmotions) => [...prevEmotions, capturedEmotions]);
-    console.log('Captured emotions:', capturedEmotions);
+    if (!playerRef.current) {
+      console.error("Player reference is not available.");
+      return;
+    }
+  
+    // Get the current playback time in seconds
+    const currentTime = playerRef.current.getCurrentTime();
+  
+    // Convert seconds to MM:SS format
+    const formattedTime = new Date(currentTime * 1000).toISOString().substr(14, 5);
+  
+    // Update emotions state with emotion and timestamp
+    setEmotions((prevEmotions) => [
+      ...prevEmotions,
+      { emotion: capturedEmotions, timestamp: formattedTime },
+    ]);
+  
+    // Log captured emotion with timestamp
+    console.log('Captured emotion:', { emotion: capturedEmotions, timestamp: formattedTime });
   };
+  
 
   const startRecordingAndPlayVideo = () => {
     setIsRecording(true);
@@ -241,6 +260,34 @@ const Review = ({movieName, userName}) => {
     
   };
 
+  const dynamicQuestion = (emotions) => {
+    if (emotions.length === 0) {
+      return "Elaborate on what you felt during this video.";
+    }
+  
+    // Count occurrences of each emotion
+    const emotionCount = emotions.reduce((acc, { emotion }) => {
+      acc[emotion] = (acc[emotion] || 0) + 1;
+      return acc;
+    }, {});
+  
+    // Find the most frequent emotion(s)
+    const maxCount = Math.max(...Object.values(emotionCount));
+    const mostFrequentEmotions = Object.keys(emotionCount).filter(
+      (emotion) => emotionCount[emotion] === maxCount
+    );
+  
+    // If there’s a tie, pick the latest emotion from the tied emotions
+    const latestEmotion = emotions.reverse().find(({ emotion }) =>
+      mostFrequentEmotions.includes(emotion)
+    );
+  
+    // Generate the question
+    return `To elaborate on why you felt "${latestEmotion.emotion}" during ${latestEmotion.timestamp}.`;
+  };
+  
+  
+
   // i had trouble redirecting used this https://stackoverflow.com/questions/58173809/next-js-redirect-from-to-another-page
   // the idea here is this is what submits the intial general quesstions, then we delete the survey from this users page, and redirect them to their todo list
   const handleFinalSubmit = async () => {
@@ -310,21 +357,21 @@ const Review = ({movieName, userName}) => {
             <div className="w-full max-w-3xl mx-auto mb-8">
               {videoUrls.length > 0 && videoUrls.map((url, index) => (
                 <ReactPlayer
-                  key={index}
-                  url={url}
-                  ref={playerRef}
-                  controls
-                  width="100%"
-                  height="100%"
-                  playing={playing}
-                  onEnded={() => {
-                    console.log("Video has ended.");
-                    setShowQuestions(true); 
-                    setShowButtons(false); 
-                    setIsRecording(false);
-                    console.log(emotions)
-                  }}
-                />
+                key={index}
+                url={url}
+                ref={playerRef} // Pass the reference to ReactPlayer
+                controls
+                width="100%"
+                height="100%"
+                playing={playing}
+                onEnded={() => {
+                  console.log("Video has ended.");
+                  setShowQuestions(true);
+                  setShowButtons(false);
+                  setIsRecording(false);
+                  console.log(emotions); // Log emotions when video ends
+                }}
+              />           
               ))}
             </div>
           )}
@@ -350,7 +397,7 @@ const Review = ({movieName, userName}) => {
           {showQuestions && !(firstQuestionAnswered && secondQuestionAnswered) && (
             <div className="flex justify-center mt-8 space-x-8">
               <QuestionBox
-                question="Elaborate on what you felt during this video"
+                question={dynamicQuestion(emotions)} 
                 answer={firstQuestionAnswer}
                 setAnswer={setFirstQuestionAnswer}
                 placeholder="Your answer here"

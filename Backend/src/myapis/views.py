@@ -236,3 +236,37 @@ def search_omdb_movie_with_backdrop(request):
 
     except requests.RequestException as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def get_recommended_movies(request, movie_id):
+    """
+    Fetches recommended movies for a given movie ID from the TMDB API.
+    """
+    if not movie_id:
+        return Response(
+            {"error": "Movie ID is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}/recommendations"
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {settings.BEARER_TOKEN}"  # Ensure your TMDB Bearer token is set in Django settings
+    }
+    
+    params = {
+        "language": "en-US",
+        "page": 1
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()  # Raise exception for HTTP errors
+        data = response.json()
+        return Response({"recommended_movies": data.get("results", [])}, status=status.HTTP_200_OK)
+    except requests.RequestException as e:
+        return Response(
+            {"error": f"Failed to fetch recommendations. {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

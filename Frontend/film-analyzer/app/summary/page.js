@@ -5,10 +5,14 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Gif from "../../components/Gif";
 import "../styles/summarystyles.css";
+import gif from "../../public/gifs/KlapperIcon.gif"
+
 
 export default function Summary() {
   const [username, setUsername] = useState("");
   const [surveys, setSurveys] = useState([]);
+  const [isTimerDone, setIsTimerDone] = useState(false);
+  const [forceLoading, setForceLoading] = useState(true);
   const { user, isLoaded } = useUser();
   const router = useRouter();
 
@@ -48,15 +52,27 @@ export default function Summary() {
     }
   };
 
-  if (!isLoaded) {
-    return (
-      <Gif
-        gifSource="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnI1MDVmNHFxZ3Bucm54aW5mcjdkcnoxYjQ5ZXgyNmxicjU3eWRuNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SskdP9VDYtJzIsHiTg/giphy.webp"
-        backgroundColor="rgb(153 27 27)"
-      />
-    );
-  }
+  useEffect(() => {
+        
+    const timer = setTimeout(() => {
+    console.log("Timer done!");
+      setIsTimerDone(true);
+      setForceLoading(false);
+    }, 2000); 
 
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  
+
+if (forceLoading || !isTimerDone || !isLoaded ) {
+    return <Gif
+    gifSource= "/gifs/KlapperIcon.gif"
+    backgroundColor="rgb(153 27 27)"
+    
+  />;
+  }
   return (
     <main
       className="min-h-screen bg-parchment text-gray-800 p-6 pt-20"

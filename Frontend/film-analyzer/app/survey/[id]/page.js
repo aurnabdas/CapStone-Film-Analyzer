@@ -1,12 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import NavBar from "../../../components/NavBar";
+import gif from "../../../public/gifs/KlapperIcon.gif"
+import Gif from "../../../components/Gif";
 
 export default function SurveyDetail({ params }) {
   const { id } = params; // Extract dynamic `id` from the URL
   const [surveyData, setSurveyData] = useState(null);
   const [error, setError] = useState(null);
+  const [isTimerDone, setIsTimerDone] = useState(false);
+  const [forceLoading, setForceLoading] = useState(true);
+  const { user, isLoaded } = useUser();
 
   const fetchSurveyData = async () => {
     try {
@@ -32,9 +38,24 @@ export default function SurveyDetail({ params }) {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  useEffect(() => {
+        
+    const timer = setTimeout(() => {
+    console.log("Timer done!");
+      setIsTimerDone(true);
+      setForceLoading(false);
+    }, 2000); 
 
-  if (!surveyData) {
-    return <div>Loading...</div>;
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!surveyData || forceLoading || !isTimerDone ||!isLoaded) {
+    return <Gif
+        gifSource= "/gifs/KlapperIcon.gif"
+        backgroundColor="rgb(153 27 27)"
+        
+      />;
   }
 
   const { survey, questions, answers } = surveyData;

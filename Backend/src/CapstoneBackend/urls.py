@@ -16,15 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .api import api
+from .api import api, update_survey_response_count
 from .upload import VideoUploadForSurveyView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path
+
+
 
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
     path('api/', api.urls),
     path('myapis/', include('myapis.urls')),
     path('upload-survey-video/', VideoUploadForSurveyView.as_view(), name='upload-survey-video'),
+   
+path('api/surveyresponsecount/<int:survey_id>/', update_survey_response_count, name='update_survey_response_count'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

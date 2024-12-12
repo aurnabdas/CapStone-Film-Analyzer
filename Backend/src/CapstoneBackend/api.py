@@ -3,9 +3,12 @@ from django.http import JsonResponse
 import json
 import os
 from email.message import EmailMessage
+from rest_framework.decorators import api_view
 import ssl
 import smtplib
 import django
+from rest_framework import status
+
 from api.models import *
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CapstoneBackend.settings")
@@ -123,43 +126,75 @@ def rolecheck(request):
     
     return {"message": "Correct Role"}
 
-@api.post("/navbar/rolecheck")
-def rolecheck(request):
-    
-    body = json.loads(request.body.decode('utf-8'))
-    print(body)
-    user_id = body.get("userID")
-    print(user_id)
-    try:
-        user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
-        print(user.role)
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
-    
-    return {"message": user.role}
+
 
 
 
 #Post request to create survey. UserId Must exist in User Table and SurveyId Must be unique
+# Post request to create survey. UserId Must exist in User Table and SurveyId Must be unique
 @api.post("/survey")
 def create_survey_entry(request):
     body = json.loads(request.body.decode('utf-8'))
     
-    user_id = body.get("user_Id") # i need to create a api call to get the id of a user given their username
+    # Fetching the username from the request body
+    username = body.get("user_Id")  # Assuming user_Id actually refers to the username
     film_name = body.get("film_name")
     video_url = body.get("videoUrls")
+    thumbnail_url = body.get("thumbnailUrls")
 
-    # Assuming `user_id` is the correct field in User model
+    # Retrieve User instance using the provided username
     try:
-        user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
+        user = User.objects.get(username=username)  # Retrieve the User instance using the `username`
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    Survey.objects.create(film_name=film_name, video_url=video_url, user_id=user.user_id)
+    # Create a new Survey entry
+    new_survey = Survey.objects.create(
+        film_name=film_name,
+        video_url=video_url,
+        thumbnail_url=thumbnail_url,
+        user=user
+    )
 
-    # Print to verify (remove in production)
-    print(f"User ID: {user_id}, Film Name: {film_name}, Video URL: {video_url}")
-    return {"message": "Survey Entry Created", "data": body}
+    # Create an associated SurveyResponseCount entry with an initial response count of 0
+    SurveyResponseCount.objects.create(
+        survey_id=new_survey,  # Referencing the created Survey instance
+        response_count=0
+    )
+
+    # Print to verify (for debugging purposes, remove this in production)
+    print(f"User ID: {user.user_id}, Film Name: {film_name}, Video URL: {video_url}, Thumbnail URL: {thumbnail_url}")
+
+    return JsonResponse({"message": "Survey Entry Created", "data": body}, status=201)
+# PATCH request to update survey response count. SurveyID must exist in Survey Table.
+@api_view(["PATCH"])
+def update_survey_response_count(request, survey_id):
+    try:
+        # Retrieve Survey instance using survey_id
+        survey = Survey.objects.get(survey_id=survey_id)  # Retrieve the Survey instance using the `survey_id`
+        
+        # Retrieve or create SurveyResponseCount for the Survey
+        response_count_entry, created = SurveyResponseCount.objects.get_or_create(
+            survey_id=survey
+        )
+
+        # Update response count by incrementing it
+        response_count_entry.response_count += 1
+        response_count_entry.save()
+
+        # Print to verify (for debugging purposes, remove this in production)
+        print(f"Survey ID: {survey.survey_id}, Updated Response Count: {response_count_entry.response_count}")
+
+        return JsonResponse(
+            {"message": "Survey response count updated successfully", "new_count": response_count_entry.response_count},
+            status=status.HTTP_200_OK,
+        )
+
+    except Survey.DoesNotExist:
+        return JsonResponse({"error": "Survey not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #Delete request to delete survey from table using survey id 
 @api.delete("/survey/{survey_id}")
@@ -170,6 +205,52 @@ def delete_survey_entry(request, survey_id: int):
         return {"message": f"Survey with ID {survey_id} deleted successfully"}
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
+
+@api.get("/surveys/{survey_id}")
+def get_survey_by_id(request, survey_id: int):
+    try:
+        survey = Survey.objects.get(survey_id=survey_id)
+        questions = SurveyQuestion.objects.filter(survey=survey).values("question__question_text")
+        answers = CustomQuestionAnswer.objects.filter(survey=survey).values(
+            "question__question_text", "answer"
+        )
+        return JsonResponse({
+            "survey": {
+                "survey_id": survey.survey_id,
+                "film_name": survey.film_name,
+                "video_url": survey.video_url,
+            },
+            "questions": list(questions),
+            "answers": list(answers),
+        })
+    except Survey.DoesNotExist:
+        return JsonResponse({"error": "Survey not found"}, status=404)
+
+    
+@api.get("/user-surveys")
+def get_user_surveys(request):
+    username = request.headers.get("username")  # Assuming the username is passed via headers
+    print("Received username:", username)  # Add this for debugging
+    
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+    surveys = Survey.objects.filter(user=user).values("survey_id", "film_name", "video_url", "thumbnail_url")
+    
+    result = []
+    for survey in surveys:
+        questions = SurveyQuestion.objects.filter(survey__survey_id=survey["survey_id"]).values("question__question_text")
+        answers = CustomQuestionAnswer.objects.filter(survey__survey_id=survey["survey_id"]).values("answer", "question__question_text")
+        result.append({
+            "survey": survey,
+            "questions": list(questions),
+            "answers": list(answers)
+        })
+
+    return JsonResponse({"user_surveys": result}, status=200)
+
 
 
 #Post request for custom-questions-answers
@@ -322,46 +403,55 @@ def get_question(request, question_id: int):
 
 
 
-
-# POST Method to create a new StandardQuestionAnswer
-@api.post("/standard-question-answers")
+@api_view(["POST"])
 def create_standard_question_answer(request):
-    body = json.loads(request.body.decode('utf-8'))
-
-    username = body.get("userName")
-    moviename = body.get("movieName")
-    mood_based_on_video = body.get("emotions")
-    mood_based_on_text = body.get("firstQuestionAnswer")
-    watch_likelihood = int(body.get("secondQuestionAnswer")) #turn this into a int
-
-
-    # Retrieve User and Survey instances
     try:
-        user = User.objects.get(username=username)
-        survey = Survey.objects.get(film_name=moviename)
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
-    except Survey.DoesNotExist:
-        return JsonResponse({"error": "Survey not found"}, status=404)
+        body = json.loads(request.body.decode('utf-8'))
+        username = body.get("userName")
+        moviename = body.get("movieName")
+        mood_based_on_video = body.get("emotions")
+        mood_based_on_text = body.get("firstQuestionAnswer")
+
+        # Converting to integer and handling invalid input
+        try:
+            watch_likelihood = int(body.get("secondQuestionAnswer"))
+        except (ValueError, TypeError):
+            return JsonResponse({"error": "Invalid value for watch_likelihood"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Retrieve User and Survey instances
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            survey = Survey.objects.get(film_name=moviename)
+        except Survey.DoesNotExist:
+            return JsonResponse({"error": "Survey not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Debugging to ensure correct values
+        print(f"Received Body: {body}")
+        print(f"Mood Based on Video: {mood_based_on_video}")
+        print(f"Mood Based on Text: {mood_based_on_text}")
+        print(f"Watch Likelihood: {watch_likelihood}")
+
+        # Create StandardQuestionAnswer entry
+        StandardQuestionAnswer.objects.create(
+            user=user,
+            survey=survey,
+            mood_based_on_video=mood_based_on_video,
+            mood_based_on_text=mood_based_on_text,
+            watch_likelihood=watch_likelihood
+        )
+
+        return JsonResponse({
+            "message": "Standard Question Answer created successfully"
+        }, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-    print(mood_based_on_video)
-    print(mood_based_on_text)
-    print(watch_likelihood)
-
-    # Create StandardQuestionAnswer entry
-    standard_answer = StandardQuestionAnswer.objects.create(
-        user=user,
-        survey=survey,
-        mood_based_on_video=mood_based_on_video,
-        mood_based_on_text=mood_based_on_text,
-        watch_likelihood=watch_likelihood
-    )
-
-    return JsonResponse({
-        "message": "Standard Question Answer created successfully",
-    }, status=201)
-
-
 # GET Method to retrieve StandardQuestionAnswer entries based on filters
 @api.get("/standard-question-answers/filter")
 def get_filtered_standard_question_answers(request, user_id: int = None, survey_id: int = None):

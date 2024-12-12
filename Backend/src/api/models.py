@@ -18,9 +18,16 @@ class Survey(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     film_name = models.CharField(max_length=255)
     video_url = models.CharField(max_length=255)
+    thumbnail_url = models.CharField(max_length=255, blank=True, null=True)  # New field for thumbnail URL
 
     def __str__(self):
         return self.film_name
+    
+class SurveyResponseCount(models.Model):
+    survey_id = models.OneToOneField(
+        'Survey', on_delete=models.CASCADE, primary_key=True, db_column='survey_id'
+    )
+    response_count = models.IntegerField(default=0)
 
 # Questions Model with explicit QuestionID
 class Question(models.Model):
@@ -43,7 +50,7 @@ class StandardQuestionAnswer(models.Model):
     mood_based_on_text = models.CharField(max_length=255)
     watch_likelihood = models.IntegerField()
 
-# Custom Questions Model with explicit UserID, SurveyID, and QuestionID
+# Custom Questions Model with explicit UserID, SurveyID, and QuestionIDS
 class CustomQuestionAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)

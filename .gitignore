@@ -39,6 +39,7 @@ Backend/*.py[cod]
 Backend/*$py.class
 
 # Distribution / packaging
+Backend/venv
 Backend/.Python
 Backend/build/
 Backend/develop-eggs/
@@ -98,6 +99,9 @@ Backend/venv.bak/
 
 # mkdocs documentation
 Backend/site/
+
+venv/
+
 
 # mypy
 Backend/.mypy_cache/

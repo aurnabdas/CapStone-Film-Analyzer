@@ -4,6 +4,7 @@ import NavBar from "../../components/NavBar";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Gif from "../../components/Gif";
+import "../styles/summarystyles.css";
 
 export default function Summary() {
   const [username, setUsername] = useState("");
@@ -59,48 +60,59 @@ export default function Summary() {
   return (
     <main
       className="min-h-screen bg-parchment text-gray-800 p-6 pt-20"
-      style={{ backgroundColor: "#f5f5dc", fontFamily: "Georgia, serif" }}
+      style={{ backgroundColor: "#180009", fontFamily: "Georgia, serif" }}
     >
       <NavBar />
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-1 mt-8">
         {surveys.length > 0 ? (
-          surveys.map((survey, index) => {
-            // Debugging: Log the thumbnail URL
-            return (
-              <div
-                key={index}
-                className="relative bg-white shadow-lg rounded-lg overflow-hidden group"
-              >
-                {/* Video preview */}
-                <div className="relative">
-                  <video
-                    className="w-full h-40 object-cover group-hover:opacity-100 opacity-0 transition-opacity duration-300"
-                    src={survey.survey.video_url}
-                    muted
-                    autoPlay
-                    loop
-                    playsInline
-                  ></video>
-                  <img
-                    className="absolute top-0 left-0 w-full h-40 object-cover group-hover:opacity-0 transition-opacity duration-300"
-                    src={survey.survey.thumbnail_url || "/path/to/default-thumbnail.jpg"}
-                    alt={`Thumbnail for ${survey.survey.film_name}`}
-                  />
-                </div>
-                {/* Survey details */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-red-800">
-                    <a href={`/survey/${survey.survey.survey_id}`}>
-                      {survey.survey.film_name}
-                    </a>
-                  </h3>
-                  <p className="text-gray-600">
-                    Survey ID: {survey.survey.survey_id}
-                  </p>
-                </div>
+          surveys.map((survey, index) => (
+            <div
+              key={index}
+              className="card"
+            >
+              {/* Thumbnail or Video */}
+              <div className="relative">
+                <img
+                  className="picture"
+                  src={survey.survey.thumbnail_url || "/path/to/default-thumbnail.jpg"}
+                  alt={`Thumbnail for ${survey.survey.film_name}`}
+                />
+                <video
+                  className="vid"
+                  src={survey.survey.video_url}
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                  onMouseEnter={(e) => {
+                    e.target.muted = false; // Unmute video on hover
+                    e.target.play(); // Play video on hover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.muted = true; // Mute video when not hovered
+                    e.target.currentTime = 0; // Reset video to the beginning
+                    e.target.pause(); // Pause video when not hovered
+
+                  }}
+                ></video>
               </div>
-            );
-          })
+
+              {/* Survey Details (hidden by default, shown on hover) */}
+              <div className="details">
+                <h3 className="text-lg font-semibold text-white-800">
+                  <a href={`/survey/${survey.survey.survey_id}`}>
+                    {survey.survey.film_name}
+                  </a>
+                </h3>
+                <p className="text-gray-600">
+                  Survey ID: {survey.survey.survey_id}
+                </p>
+                <p className="text-gray-600">
+                   Responses: {survey.response_count}
+                </p>
+              </div>
+            </div>
+          ))
         ) : (
           <p>No surveys found for this user.</p>
         )}

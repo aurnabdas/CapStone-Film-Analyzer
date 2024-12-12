@@ -33,8 +33,11 @@ const Review = ({movieName, userName}) => {
   const [firstQuestionAnswered, setFirstQuestionAnswered] = useState(false);
   const [secondQuestionAnswered, setSecondQuestionAnswered] = useState(false);
   const [showFinalButton, setShowFinalButton] = useState(false);
-  
+  const [lastPlayedTime, setLastPlayedTime] = useState(0);
+  const [maxProgress, setMaxProgress] = useState(0);
 
+
+  
 
   useEffect(() => {
     if (user && user.publicMetadata.role === 'Studio') {
@@ -109,7 +112,7 @@ const Review = ({movieName, userName}) => {
     console.log('Captured emotion:', { emotion: capturedEmotions, timestamp: formattedTime });
   };
   
-
+  
   const startRecordingAndPlayVideo = () => {
     setIsRecording(true);
     setShowVideo(true); // Show the video player when starting
@@ -342,7 +345,23 @@ const Review = ({movieName, userName}) => {
     
   };
   
+  const handleSeek = (seekTime) => {
+    // Prevent seeking both forward and backward
+    if (seekTime !== lastPlayedTime) {
+      if (playerRef.current) {
+        playerRef.current.seekTo(lastPlayedTime, "seconds");
+      }
+    }
+  };
+  
+  
+  const handleProgress = (state) => {
+    // Update the last played position as the video progresses
+    setLastPlayedTime(state.playedSeconds);
+  };
 
+  
+  
  
 
   return (
@@ -360,10 +379,12 @@ const Review = ({movieName, userName}) => {
                 key={index}
                 url={url}
                 ref={playerRef} // Pass the reference to ReactPlayer
-                controls
+                controls = {false}
                 width="100%"
                 height="100%"
                 playing={playing}
+                onProgress={handleProgress} // Track video progress
+                onSeek={handleSeek} // Handle seeking events
                 onEnded={() => {
                   console.log("Video has ended.");
                   setShowQuestions(true);
@@ -383,13 +404,6 @@ const Review = ({movieName, userName}) => {
             className={`px-8 py-3 rounded-md text-white transition ${isRecording ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {isRecording ? 'Recording Emotions...' : 'Play Video & Start Recording'}
-          </button>
-          <button
-            onClick={stopRecordingAndPauseVideo}
-            disabled={!isRecording}
-            className="px-8 py-3 rounded-md bg-red-600 text-white hover:bg-red-700 transition ml-4"
-          >
-            Stop Recording & Pause Video
           </button>
           </div>
           )}

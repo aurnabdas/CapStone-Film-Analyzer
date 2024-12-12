@@ -3,6 +3,6 @@ django-ninja
 rav
 django-cors-headers
 python-dotenv
-psycopg2
+psycopg2-binary
 djangorestframework
 google-generativeai

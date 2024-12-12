@@ -12,6 +12,7 @@ Backend/media/
 Backend/*.bak
 
 # PyCharm specific
+Backend/venv/
 Backend/.idea/**/workspace.xml
 Backend/.idea/**/tasks.xml
 Backend/.idea/**/usage.statistics.xml

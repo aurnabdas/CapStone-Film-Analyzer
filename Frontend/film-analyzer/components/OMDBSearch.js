@@ -106,7 +106,7 @@ const OMDBSearch = () => {
       {showSearch && (
         <div className="bg-black bg-opacity-80 text-white p-8 rounded-lg shadow-lg w-4/5 md:w-3/5 lg:w-2/5 mx-auto mt-10">
           <div className="text-center mb-4">
-            <h1 className="text-3xl font-bold text-gold">OMDB Movie Search</h1>
+            <h1 className="text-3xl font-bold text-gold">Movie Search</h1>
             <p className="text-gray-300 mt-2">
               Search for movies and see detailed information about them.
             </p>

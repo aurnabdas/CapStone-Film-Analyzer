@@ -46,7 +46,7 @@ class SurveyQuestion(models.Model):
 class StandardQuestionAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    mood_based_on_video = models.CharField(max_length=255)
+    mood_based_on_video = models.CharField(max_length=5000)
     mood_based_on_text = models.CharField(max_length=255)
     watch_likelihood = models.IntegerField()
 

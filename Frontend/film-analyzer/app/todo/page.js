@@ -6,11 +6,15 @@ import NavBar from '../../components/NavBar';
 import { Tab } from '@nextui-org/react';
 import Link from 'next/link';
 import Gif from "../../components/Gif"
+import gif from "../../public/gifs/KlapperIcon.gif"
+
 
  function ToDo() {
     const { user, isLoaded } = useUser();
     const [movie, setMovies] = useState([]);
     const [username, setUserName] = useState();
+    const [isTimerDone, setIsTimerDone] = useState(false);
+    const [forceLoading, setForceLoading] = useState(true);
     
     const checkingUsers = async () => {
         const response = await fetch('http://127.0.0.1:8000/api/check', {
@@ -42,10 +46,23 @@ import Gif from "../../components/Gif"
 
     //this was causing me so much issues, i needed this loading statement, for clerk to load in the user object
     // and this had to be put after the useeffect, this issue was resolved from a stack overflow forum: https://stackoverflow.com/questions/55622768/uncaught-invariant-violation-rendered-more-hooks-than-during-the-previous-rende
-    if (!isLoaded) {
+    useEffect(() => {
+        
+        const timer = setTimeout(() => {
+        console.log("Timer done!");
+          setIsTimerDone(true);
+          setForceLoading(false);
+        }, 2000); 
+    
+        
+        return () => clearTimeout(timer);
+      }, []);
+
+    if (forceLoading || !isTimerDone || !isLoaded ) {
         return <Gif
-        gifSource="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZndkM3h2OHZiZm1ocjNqNDJ4eWpjZmZibmlibW5vZGswdjZvMjZrbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/FEXGAddVac7K4VkY9C/giphy.webp"
+        gifSource= "/gifs/KlapperIcon.gif"
         backgroundColor="rgb(153 27 27)"
+        
       />;
       }
 

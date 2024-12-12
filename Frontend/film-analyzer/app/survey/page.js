@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/react";
 import Gif from "../../components/Gif"
 import Swal from 'sweetalert2'
+import gif from "../../public/gifs/KlapperIcon.gif"
 
 export default function Review() {
   //-------------------states----------------------------
@@ -23,6 +24,8 @@ export default function Review() {
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [preLoaded, setPreSubmit] = useState(true);
+  const [isTimerDone, setIsTimerDone] = useState(false);
+  const [forceLoading, setForceLoading] = useState(true);
   const questionsRef = useRef(null);
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -99,11 +102,25 @@ export default function Review() {
     }
   }, [isLoaded, user]);
 
-  if (!isLoaded) {
+  useEffect(() => {
+        
+    const timer = setTimeout(() => {
+    console.log("Timer done!");
+      setIsTimerDone(true);
+      setForceLoading(false);
+    }, 2000); 
+
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  
+if (forceLoading || !isTimerDone || !isLoaded ) {
     return <Gif
-        gifSource="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMGFpdjNidm02ZXhiZTRiZDZ6a25yeGQxcjJqaHNpbTJzc2RtanloMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BPJmthQ3YRwD6QqcVD/giphy.webp"
-        backgroundColor="rgb(153 27 27)"
-      />;
+    gifSource= "/gifs/KlapperIcon.gif"
+    backgroundColor="rgb(153 27 27)"
+    
+  />;
   }
 
 

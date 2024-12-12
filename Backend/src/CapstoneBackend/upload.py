@@ -3,48 +3,54 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-import json
-from api.models import *
 from django.http import JsonResponse
 
-
-#https://www.geeksforgeeks.org/create-a-directory-in-python/
-#https://gearheart.io/blog/how-to-upload-files-with-django/
+# Video and Thumbnail Upload View
 class VideoUploadForSurveyView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
-    
-        # username = json.loads(request.userID.decode('utf-8'))
-        # print(username)
-        # user = User.objects.get(username=username)
-        # print(user.role)
-        # if user.role == "reviewer":
-        #     return JsonResponse({"message": "Incorrect Role"}, status=400)
-        
-        # this gets the name and the video itself from the request
-        uploaded_file = request.FILES['video']
-        file_name = uploaded_file.name
+        # Handle video file
+        uploaded_video = request.FILES.get('video')
+        video_file_name = uploaded_video.name if uploaded_video else None
 
-        # in setting.py we have paths set up that will be combined with our file name and this is where we will upload the video content
+        # Handle thumbnail file
+        uploaded_thumbnail = request.FILES.get('thumbnail')
+        thumbnail_file_name = uploaded_thumbnail.name if uploaded_thumbnail else None
+
+        # Define save directory
         save_dir = settings.MEDIA_ROOT
-        save_path = os.path.join(save_dir, file_name)
 
-        # this creates the directory if not made
+        # Ensure the directory exists
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
-        # Saves the video to the server
-        with open(save_path, 'wb+') as destination:
-            for chunk in uploaded_file.chunks():
-                destination.write(chunk)
+        # Save video file
+        if uploaded_video:
+            video_save_path = os.path.join(save_dir, video_file_name)
+            with open(video_save_path, 'wb+') as destination:
+                for chunk in uploaded_video.chunks():
+                    destination.write(chunk)
+            video_url = f"{settings.MEDIA_URL}{video_file_name}"
+        else:
+            video_url = None  # If no video is uploaded
 
-        # Now we construct the URL that we want to send to the frontend, so it can properly acquire the video to display in the backend
-        video_url = f"{settings.MEDIA_URL}{file_name}"
-        print(video_url)
+        # Save thumbnail file
+        if uploaded_thumbnail:
+            thumbnail_save_path = os.path.join(save_dir, thumbnail_file_name)
+            with open(thumbnail_save_path, 'wb+') as destination:
+                for chunk in uploaded_thumbnail.chunks():
+                    destination.write(chunk)
+            thumbnail_url = f"{settings.MEDIA_URL}{thumbnail_file_name}"
+        else:
+            thumbnail_url = None  # If no thumbnail is uploaded
 
-        
+        # Log the URLs for debugging
+        print(f"Video URL: {video_url}, Thumbnail URL: {thumbnail_url}")
+
+        # Return response with URLs
         return Response({
-            "message": "Video uploaded and survey updated successfully!",
-            "video_url": video_url,  
+            "message": "Files uploaded successfully!",
+            "video_url": video_url,
+            "thumbnail_url": thumbnail_url,
         }, status=200)

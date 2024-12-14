@@ -314,7 +314,7 @@ const Review = ({movieName, userName}) => {
           const data = await deleteResponse.json();
           Swal.fire({
             icon: "error",
-            title: data.message,
+            title: "error",
             text: "Failed to delete data.",
             showConfirmButton: false,
             timer: 1750
@@ -325,7 +325,7 @@ const Review = ({movieName, userName}) => {
         const data = await response.json();
         Swal.fire({
           icon: "error",
-          title: data.message,
+          title: "error",
           text: "Failed to delete data.",
           showConfirmButton: false,
           timer: 1750
@@ -335,7 +335,7 @@ const Review = ({movieName, userName}) => {
       console.error("Error submitting data:", error);
       Swal.fire({
         icon: "error",
-        title: data.message,
+        title: "error",
         text: "An error occurred while submitting the data. Please try again.",
         showConfirmButton: false,
         timer: 1750

@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import { useEffect, useState } from "react";
 import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { AiOutlineMenu } from "react-icons/ai";
@@ -24,18 +24,21 @@ const NavBar = () => {
   const fetchRole = async () => {
     if (!username) return;
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/navbar/rolecheck", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userID: username }),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/navbar/rolecheck",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userID: username }),
+        }
+      );
 
       if (response.status === 200) {
         const data = await response.json();
         setRole(data.message);
-      } 
+      }
     } catch (error) {
       console.error("Error fetching surveys:", error);
     }
@@ -59,31 +62,52 @@ const NavBar = () => {
 
         {/* Navigation Links */}
         <div className="flex justify-center space-x-8">
-          <Link href="/" className="text-white hover:text-[#FFD700] transition-colors">
+          <Link
+            href="/"
+            className="text-white hover:text-[#FFD700] transition-colors"
+          >
             Home
           </Link>
-          <Link href="/about" className="text-white hover:text-[#FFD700] transition-colors">
+          <Link
+            href="/about"
+            className="text-white hover:text-[#FFD700] transition-colors"
+          >
             About
+          </Link>
+          <Link
+            href="/moviesearch"
+            className="text-white hover:text-[#FFD700] transition-colors"
+          >
+            MovieSearch
           </Link>
           {isMounted && (
             <SignedIn>
-            {/* Conditionally Render Links Based on Role */}
-            {role === "studio" && (
-              <Link href="/survey" className="text-white hover:text-[#FFD700] transition-colors">
-                Create Survey
-              </Link>
-            )}
-            {role === "reviewer" && (
-              <Link href="/todo" className="text-white hover:text-[#FFD700] transition-colors">
-                Available Surveys
-              </Link>
-            )}
-            {role === "studio" && (
-              <Link href="/summary" className="text-white hover:text-[#FFD700] transition-colors">
-                Survey Results
-              </Link>
-            )}
-          </SignedIn>
+              {/* Conditionally Render Links Based on Role */}
+              {role === "studio" && (
+                <Link
+                  href="/survey"
+                  className="text-white hover:text-[#FFD700] transition-colors"
+                >
+                  Create Survey
+                </Link>
+              )}
+              {role === "reviewer" && (
+                <Link
+                  href="/todo"
+                  className="text-white hover:text-[#FFD700] transition-colors"
+                >
+                  Available Surveys
+                </Link>
+              )}
+              {role === "studio" && (
+                <Link
+                  href="/summary"
+                  className="text-white hover:text-[#FFD700] transition-colors"
+                >
+                  Survey Results
+                </Link>
+              )}
+            </SignedIn>
           )}
         </div>
 

@@ -219,6 +219,8 @@ def delete_survey_entry(request, survey_id: int):
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
 
+
+
 @api.get("/surveys/{survey_id}")
 def get_survey_by_id(request, survey_id: int):
     try:
@@ -416,55 +418,86 @@ def get_question(request, question_id: int):
 
 
 
-@api_view(["POST"])
+# @api_view(["POST"])
+# def create_standard_question_answer(request):
+#     try:
+#         body = json.loads(request.body.decode('utf-8'))
+#         username = body.get("userName")
+#         moviename = body.get("movieName")
+#         mood_based_on_video = body.get("emotions")
+#         mood_based_on_text = body.get("firstQuestionAnswer")
+
+#         # Converting to integer and handling invalid input
+#         try:
+#             watch_likelihood = int(body.get("secondQuestionAnswer"))
+#         except (ValueError, TypeError):
+#             return JsonResponse({"error": "Invalid value for watch_likelihood"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Retrieve User and Survey instances
+#         try:
+#             user = User.objects.get(username=username)
+#         except User.DoesNotExist:
+#             return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#         try:
+#             survey = Survey.objects.get(film_name=moviename)
+#         except Survey.DoesNotExist:
+#             return JsonResponse({"error": "Survey not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#         # Debugging to ensure correct values
+#         print(f"Received Body: {body}")
+#         print(f"Mood Based on Video: {mood_based_on_video}")
+#         print(f"Mood Based on Text: {mood_based_on_text}")
+#         print(f"Watch Likelihood: {watch_likelihood}")
+
+#         # Create StandardQuestionAnswer entry
+#         StandardQuestionAnswer.objects.create(
+#             user=user,
+#             survey=survey,
+#             mood_based_on_video=mood_based_on_video,
+#             mood_based_on_text=mood_based_on_text,
+#             watch_likelihood=watch_likelihood
+#         )
+
+#         return JsonResponse({
+#             "message": "Standard Question Answer created successfully"
+#         }, status=status.HTTP_201_CREATED)
+
+#     except Exception as e:
+#         print(f"Unexpected error: {e}")
+#         return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# POST Method to create a new StandardQuestionAnswer
+@api.post("/standard-question-answers")
 def create_standard_question_answer(request):
+    body = json.loads(request.body.decode('utf-8'))
+    username = body.get("userName")
+    moviename = body.get("movieName")
+    mood_based_on_video = body.get("emotions")
+    mood_based_on_text = body.get("firstQuestionAnswer")
+    watch_likelihood = int(body.get("secondQuestionAnswer")) #turn this into a int
+    # Retrieve User and Survey instances
     try:
-        body = json.loads(request.body.decode('utf-8'))
-        username = body.get("userName")
-        moviename = body.get("movieName")
-        mood_based_on_video = body.get("emotions")
-        mood_based_on_text = body.get("firstQuestionAnswer")
-
-        # Converting to integer and handling invalid input
-        try:
-            watch_likelihood = int(body.get("secondQuestionAnswer"))
-        except (ValueError, TypeError):
-            return JsonResponse({"error": "Invalid value for watch_likelihood"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Retrieve User and Survey instances
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        try:
-            survey = Survey.objects.get(film_name=moviename)
-        except Survey.DoesNotExist:
-            return JsonResponse({"error": "Survey not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Debugging to ensure correct values
-        print(f"Received Body: {body}")
-        print(f"Mood Based on Video: {mood_based_on_video}")
-        print(f"Mood Based on Text: {mood_based_on_text}")
-        print(f"Watch Likelihood: {watch_likelihood}")
-
-        # Create StandardQuestionAnswer entry
-        StandardQuestionAnswer.objects.create(
-            user=user,
-            survey=survey,
-            mood_based_on_video=mood_based_on_video,
-            mood_based_on_text=mood_based_on_text,
-            watch_likelihood=watch_likelihood
-        )
-
-        return JsonResponse({
-            "message": "Standard Question Answer created successfully"
-        }, status=status.HTTP_201_CREATED)
-
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        user = User.objects.get(username=username)
+        survey = Survey.objects.get(film_name=moviename)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    except Survey.DoesNotExist:
+        return JsonResponse({"error": "Survey not found"}, status=404)
     
+    print(mood_based_on_video)
+    print(mood_based_on_text)
+    print(watch_likelihood)
+    # Create StandardQuestionAnswer entry
+    standard_answer = StandardQuestionAnswer.objects.create(
+        user=user,
+        survey=survey,
+        mood_based_on_video=mood_based_on_video,
+        mood_based_on_text=mood_based_on_text,
+        watch_likelihood=watch_likelihood
+    )
+    return JsonResponse({
+        "message": "Standard Question Answer created successfully",
+    }, status=201)
 # GET Method to retrieve StandardQuestionAnswer entries based on filters
 @api.get("/standard-question-answers/filter")
 def get_filtered_standard_question_answers(request, user_id: int = None, survey_id: int = None):

@@ -84,13 +84,13 @@ const NavBar = () => {
       <div className="flex justify-center space-x-8">
         <Link
           href="/"
-          className="text-white hover:text-[#FFD700] transition-colors focus:outline-none text-large"
+          className="text-white hover:text-[#FFD700] transition-colors focus:outline-none font-sans "
         >
           Home
         </Link>
         <Link
           href="/about"
-          className="text-white hover:text-[#FFD700] transition-colors focus:outline-none text-large"
+          className="text-white hover:text-[#FFD700] transition-colors focus:outline-none font-sans "
         >
           About
         </Link>
@@ -101,8 +101,8 @@ const NavBar = () => {
           unmount: { y: 25 },
         }}>
           <MenuHandler>
-            <div className="text-white hover:text-[#FFD700] transition-colors bg-[#7E0B20] text- focus:outline-none">
-              <Button className="text-white hover:text-[#FFD700] transition-colors bg-[#7E0B20] text-large focus:outline-none font-sans font-normal">
+            <div className="text-white hover:text-[#FFD700] transition-colors bg-[#7E0B20] text-medium focus:outline-none">
+              <Button className="text-white hover:text-[#FFD700] transition-colors bg-[#7E0B20] text-medium focus:outline-none font-sans font-normal">
                 Available Services
               </Button>
             </div>
@@ -114,7 +114,7 @@ const NavBar = () => {
                   <MenuItem>
                     <Link
                       href="/survey"
-                      className="text-white hover:text-[#FFD700] transition-colors focus:outline-none rounded-md px-2 py-1 text-large"
+                      className="text-white hover:text-[#FFD700] transition-colors focus:outline-none rounded-md px-2 py-1 text-large font-sans"
                     >
                       Create Survey
                     </Link>
@@ -124,7 +124,7 @@ const NavBar = () => {
                   <MenuItem>
                     <Link
                       href="/todo"
-                      className="text-white hover:text-[#FFD700] transition-colors focus:outline-none rounded-md px-2 py-1 text-large"
+                      className="text-white hover:text-[#FFD700] transition-colors focus:outline-none rounded-md px-2 py-1 text-large font-sans"
                     >
                       Available Surveys
                     </Link>
@@ -134,7 +134,7 @@ const NavBar = () => {
                   <MenuItem>
                     <Link
                       href="/summary"
-                      className="text-white hover:text-[#FFD700] transition-colors focus:outline-none rounded-md px-2 py-1 text-large"
+                      className="text-white hover:text-[#FFD700] transition-colors focus:outline-none rounded-md px-2 py-1 text-large font-sans"
                     >
                       Survey Results
                     </Link>
@@ -156,7 +156,7 @@ const NavBar = () => {
             />
             <button
               type="submit"
-              className="bg-[#7E0B20] shadow-lg shadow-blue-gray-500/10 text-white px-4 py-2 rounded-md  hover:shadow-[0_2px_0_#450a0a] active:translate-y-1 active:shadow-none transition-all duration-200 font-semibold text-large"
+              className="bg-[#7E0B20] shadow-lg shadow-blue-gray-500/10 text-white px-4 py-2 rounded-md  hover:shadow-[0_2px_0_#450a0a] active:translate-y-1 active:shadow-none transition-all duration-200 font-sans font-semibold"
               >
               Search
             </button>

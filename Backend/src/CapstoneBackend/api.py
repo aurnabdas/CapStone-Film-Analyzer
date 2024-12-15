@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 import ssl
 import smtplib
 import django
+import ast
 from rest_framework import status
 
 from api.models import *
@@ -221,10 +222,25 @@ def delete_survey_entry(request, survey_id: int):
 
 
 
+import json
+
 @api.get("/surveys/{survey_id}")
 def get_survey_by_id(request, survey_id: int):
     try:
         survey = Survey.objects.get(survey_id=survey_id)
+        standard_answers = StandardQuestionAnswer.objects.filter(survey=survey)
+        standard_answers_data = []
+        for answer in standard_answers:
+            try:
+                mood_data = json.loads(answer.mood_based_on_video)
+            except json.JSONDecodeError:
+                mood_data = ast.literal_eval(answer.mood_based_on_video)  # Handle single-quoted data
+
+            standard_answers_data.append({
+                "mood_based_on_video": mood_data,
+                "mood_based_on_text": answer.mood_based_on_text,
+                "watch_likelihood": answer.watch_likelihood,
+            })
         questions = SurveyQuestion.objects.filter(survey=survey).values("question__question_text")
         answers = CustomQuestionAnswer.objects.filter(survey=survey).values(
             "question__question_text", "answer"
@@ -237,10 +253,10 @@ def get_survey_by_id(request, survey_id: int):
             },
             "questions": list(questions),
             "answers": list(answers),
+            "standard_answers": standard_answers_data,
         })
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
-
     
 @api.get("/user-surveys")
 def get_user_surveys(request):

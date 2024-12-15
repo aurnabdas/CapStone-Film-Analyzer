@@ -141,6 +141,60 @@ export default function SurveyDetail({ params }) {
           </ul>
         )}
       </section>
+      {/* Standard Answers Section */}
+      {/* Survey Insights Section */}
+      {/* Survey Insights Section */}
+      <section className="mt-10 px-6 max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-gold mb-6">Survey Insights</h2>
+        {surveyData.standard_answers.length > 0 ? (
+          <ul className="space-y-6">
+            {surveyData.standard_answers.map((answer, index) => (
+              <li
+                key={index}
+                className="p-4 bg-gray-800 rounded-lg shadow-md border border-gray-700"
+              >
+                <h3 className="text-lg font-semibold text-gold mb-3">
+                  Insight {index + 1}
+                </h3>
+                {/* Mood Based on Video */}
+                <div className="mb-4">
+                  <p className="text-gray-300 font-bold">
+                    Mood Based on Video:
+                  </p>
+                  <ul className="mt-2 space-y-1 pl-4 list-disc">
+                    {answer.mood_based_on_video.map((emotion, i) => (
+                      <li key={i} className="text-gray-300">
+                        <span className="font-bold">Emotion:</span>{" "}
+                        {emotion.emotion},{" "}
+                        <span className="font-bold">Timestamp:</span>{" "}
+                        {emotion.timestamp}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Mood Based on Text */}
+                <div className="mb-4">
+                  <p className="text-gray-300 font-bold">Mood Based on Text:</p>
+                  <p className="text-gray-300 mt-1">
+                    {answer.mood_based_on_text}
+                  </p>
+                </div>
+                {/* Watch Likelihood */}
+                <div>
+                  <p className="text-gray-300 font-bold">Watch Likelihood:</p>
+                  <p className="text-gray-300 mt-1">
+                    {answer.watch_likelihood}/10
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-400">
+            No insights available for this survey.
+          </p>
+        )}
+      </section>
     </main>
   );
 }

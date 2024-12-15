@@ -3,41 +3,39 @@
 import { useState } from "react";
 
 const OMDBSearch = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [movie, setMovie] = useState(null); // Store movie details
+  const router = useRouter();
+  const { query } = router.query; // Get the query from the URL
+  const [movie, setMovie] = useState(null);
   const [error, setError] = useState("");
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      setError("Please enter a movie name.");
-      return;
-    }
-
-    setError("");
-
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/myapis/search-omdb-movie-with-backdrop?query=${encodeURIComponent(
-          searchQuery
-        )}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.movie) {
-          setMovie(data.movie); // Save movie data
-        } else {
-          setError("No movie found for your search.");
-          setMovie(null);
+  useEffect(() => {
+    if (query) {
+      const fetchMovie = async () => {
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:8000/myapis/search-omdb-movie-with-backdrop?query=${encodeURIComponent(
+              query
+            )}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.movie) {
+              setMovie(data.movie);
+            } else {
+              setError("No movie found for your search.");
+            }
+          } else {
+            setError("Failed to fetch movie details.");
+          }
+        } catch (err) {
+          setError("An error occurred while fetching movie details.");
         }
-      } else {
-        setError("Failed to fetch movie details. Please try again.");
-        setMovie(null);
-      }
-    } catch (err) {
-      setError("An error occurred while fetching movie details.");
-      setMovie(null);
+      };
+
+      fetchMovie();
     }
-  };
+  }, [query]);
+
 
   return (
     <div

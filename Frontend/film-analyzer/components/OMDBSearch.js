@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import NavBar from "./NavBar";
-import Gif from '../components/Gif'
+import Gif from "../components/Gif";
 
 const OMDBSearch = () => {
   const [movie, setMovie] = useState(null);
@@ -108,7 +108,7 @@ const OMDBSearch = () => {
   };
 
   useEffect(() => {
-    if (searchQuery){
+    if (searchQuery) {
       handleSearch(searchQuery);
     }
   }, [searchQuery]);
@@ -128,10 +128,7 @@ const OMDBSearch = () => {
   // Show loading GIF while the content is not ready
   if (isLoading) {
     return (
-      <Gif
-        gifSource="/gifs/KlapperIcon.gif"
-        backgroundColor="rgb(153 27 27)"
-      />
+      <Gif gifSource="/gifs/KlapperIcon.gif" backgroundColor="rgb(153 27 27)" />
     );
   }
 
@@ -241,38 +238,45 @@ const OMDBSearch = () => {
           <h2 className="text-center text-3xl font-bold text-gold mb-6">
             You May Also Like
           </h2>
-          <div className="flex overflow-x-auto space-x-6 px-4 scrollbar-hide">
-            {recommendedMovies.map((recMovie) => (
-              <div
-                key={recMovie.id}
-                className="flex-none w-48 bg-[#7E1328] shadow-lg rounded-lg overflow-hidden border border-gold relative group transition-all duration-300 transform hover:scale-110 hover:translate-y-[-5px] hover:shadow-[0_0_20px_10px_rgba(255,223,0,0.9)] hover:bg-[#9b2222]"
-              >
-                {/* Poster */}
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${recMovie.poster_path}`}
-                  alt={recMovie.title}
-                  className="w-full h-64 object-cover"
-                />
-                {/* Movie Details */}
-                <div className="p-3 text-white">
-                  <h3 className="text-md font-bold text-gold truncate">
-                    {recMovie.title}
-                  </h3>
-                  <p className="text-gray-300 text-xs mt-1 line-clamp-2">
-                    {recMovie.overview?.length > 100
-                      ? `${recMovie.overview.substring(0, 100)}...`
-                      : recMovie.overview || "No description available."}
-                  </p>
-                </div>
-                {/* "View Details" Button on Hover */}
-                <button
-                  onClick={() => handleSearch(recMovie.title)}
-                  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white font-semibold px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+
+          {/* Allow overflow and prevent clipping */}
+          <div className="px-4">
+            <div className="flex overflow-x-auto scrollbar-hide space-x-6 px-4 py-8 overflow-visible">
+              {recommendedMovies.map((recMovie) => (
+                <div
+                  key={recMovie.id}
+                  className="relative flex-none w-48 bg-[#7E1328] shadow-lg rounded-lg overflow-visible border border-gold transition-all duration-300 transform hover:scale-110 hover:translate-y-[-5px] hover:shadow-[0_0_20px_10px_rgba(255,223,0,0.9)] hover:bg-[#9b2222]"
+                  style={{ zIndex: 10 }}
                 >
-                  View Details
-                </button>
-              </div>
-            ))}
+                  {/* Poster */}
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${recMovie.poster_path}`}
+                    alt={recMovie.title}
+                    className="w-full h-64 object-cover rounded-t-lg"
+                  />
+
+                  {/* Movie Details */}
+                  <div className="p-3 text-white">
+                    <h3 className="text-md font-bold text-gold truncate">
+                      {recMovie.title}
+                    </h3>
+                    <p className="text-gray-300 text-xs mt-1 line-clamp-2">
+                      {recMovie.overview?.length > 100
+                        ? `${recMovie.overview.substring(0, 100)}...`
+                        : recMovie.overview || "No description available."}
+                    </p>
+                  </div>
+
+                  {/* View Details Button */}
+                  <button
+                    onClick={() => handleSearch(recMovie.title)}
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white font-semibold px-3 py-1 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300"
+                  >
+                    View Details
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

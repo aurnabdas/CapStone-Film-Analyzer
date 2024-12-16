@@ -33,6 +33,66 @@ export default function SurveyDetail({ params }) {
     }
   };
 
+
+const downloadResults = () => {
+  if (!surveyData) return;
+
+  const answers = surveyData.answers || [];
+
+  // Add CSV headers
+  let csvContent = "data:text/csv;charset=utf-8,Question,Answer\n";
+
+  // Map through answers and append rows
+  answers.forEach((a) => {
+    const questionText = a.question__question_text.replace(/"/g, '""'); // Escape quotes
+    const answerText = a.answer.replace(/"/g, '""');
+    csvContent += `"${questionText}","${answerText}"\n`;
+  });
+
+  // Trigger download
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.href = encodedUri;
+  link.download = `survey_${id}_questions_answers.csv`;
+  link.click();
+};
+
+const downloadEmotions = () => {
+  if (!surveyData) return;
+
+  const insights = surveyData.standard_answers || [];
+
+  // Add CSV headers
+  let csvContent = "data:text/csv;charset=utf-8,Emotion,Timestamp,Mood Based on Text,Watch Likelihood\n";
+
+  // Map through insights and append rows
+  insights.forEach((insight) => {
+    const moodVideo = insight.mood_based_on_video || [];
+    const moodText = insight.mood_based_on_text || "N/A";
+    const watchLikelihood = insight.watch_likelihood || "N/A";
+
+    // Add rows for each emotion
+    if (moodVideo.length > 0) {
+      moodVideo.forEach((emotion) => {
+        const emotionText = emotion.emotion || "N/A";
+        const timestamp = emotion.timestamp || "N/A";
+        csvContent += `"${emotionText}","${timestamp}","${moodText}","${watchLikelihood}"\n`;
+      });
+    } else {
+      // If no emotions, add a single row with mood text and watch likelihood
+      csvContent += `"N/A","N/A","${moodText}","${watchLikelihood}"\n`;
+    }
+  });
+
+  // Trigger download
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.href = encodedUri;
+  link.download = `survey_${id}_emotions.csv`;
+  link.click();
+};
+
+
   useEffect(() => {
     if (id) fetchSurveyData();
   }, [id]);
@@ -100,6 +160,25 @@ export default function SurveyDetail({ params }) {
         </div>
       </section>
 
+   {/* Download Buttons */}
+<section className="mt-10 px-6 max-w-5xl mx-auto">
+  <div className="flex justify-center space-x-4">
+    <button
+      className="px-6 py-2 bg-gold text-black font-bold rounded-lg shadow-md hover:bg-yellow-400 transition-all"
+      onClick={downloadResults}
+    >
+      Download Questions & Answers
+    </button>
+    <button
+      className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-all"
+      onClick={downloadEmotions}
+    >
+      Download Emotions
+    </button>
+  </div>
+</section>
+
+
       {/* Questions Section (Dropdown) */}
       <section className="mt-10 px-6 max-w-5xl mx-auto">
         <div
@@ -166,7 +245,6 @@ export default function SurveyDetail({ params }) {
         )}
       </section>
 
-      {/* Survey Insights Section (Dropdown) */}
       {/* Survey Insights Section (Dropdown) */}
       <section className="mt-10 px-6 max-w-5xl mx-auto">
         <div

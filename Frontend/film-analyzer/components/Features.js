@@ -48,9 +48,11 @@ const Features = () => {
           ))}
         </div>
         <div className="flex justify-center mt-12">
-          <button className="text-white bg-gold py-2 px-8 rounded-lg hover:bg-[#9b2222] transition duration-300">
-            Learn More About Our Tools
-          </button>
+          <Link href="https://face-specs.vercel.app/">
+            <button className="text-white bg-gold py-2 px-8 rounded-lg hover:bg-[#9b2222] transition duration-300">
+              Learn More About Our Tools
+            </button>
+          </Link>
         </div>
       </div>
     </section>
@@ -73,12 +75,12 @@ function FeatureCard({ feature }) {
         >
           {feature.description}
         </p>
-        <Link
+        {/* <Link
           href={feature.link}
           className="mt-3 text-gold inline-flex items-center font-semibold hover:underline"
         >
           Learn More →
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

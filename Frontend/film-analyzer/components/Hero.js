@@ -38,16 +38,16 @@ const Hero = () => {
           with our advanced tools designed for both studios and users.
         </p>
         <div className="flex mt-8 justify-center gap-4">
-          <Link href="/review">
+          <Link href="/about">
             <button className="bg-[#D5A036] text-white px-6 py-2 md:px-8 md:py-3 rounded-lg text-sm md:text-lg hover:bg-yellow-600 transition duration-300">
-              Explore Reviews
+              About Us
             </button>
           </Link>
-          <Link href="/survey">
+          {/* <Link href="/survey">
             <button className="bg-[#D5A036] text-white px-6 py-2 md:px-8 md:py-3 rounded-lg text-sm md:text-lg hover:bg-yellow-600 transition duration-300">
               Take a Survey
             </button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </section>

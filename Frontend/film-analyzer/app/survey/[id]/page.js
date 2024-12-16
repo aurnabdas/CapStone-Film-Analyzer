@@ -6,12 +6,14 @@ import NavBar from "../../../components/NavBar";
 import Gif from "../../../components/Gif";
 
 export default function SurveyDetail({ params }) {
-  const { id } = params; // Extract dynamic `id` from the URL
+  const { id } = params;
   const [surveyData, setSurveyData] = useState(null);
   const [error, setError] = useState(null);
   const [isTimerDone, setIsTimerDone] = useState(false);
   const [forceLoading, setForceLoading] = useState(true);
-  const [isAnswersVisible, setIsAnswersVisible] = useState(false); // For dropdown
+  const [isQuestionsVisible, setIsQuestionsVisible] = useState(false);
+  const [isAnswersVisible, setIsAnswersVisible] = useState(false);
+  const [isInsightsVisible, setIsInsightsVisible] = useState(false);
   const { user, isLoaded } = useUser();
 
   const fetchSurveyData = async () => {
@@ -58,16 +60,16 @@ export default function SurveyDetail({ params }) {
     );
   }
 
-  const { survey, questions, answers } = surveyData;
+  const { survey, questions, answers, standard_answers } = surveyData;
 
   return (
     <main className="min-h-screen bg-gray-900 text-white pb-10">
       <NavBar />
       {/* Header Section */}
       <header
-        className="relative w-full flex items-center justify-center pt-16" // Added padding-top
+        className="relative w-full flex items-center justify-center pt-16"
         style={{
-          height: "150px", // Adjust height to take enough space
+          height: "150px",
           backgroundImage: `url(${survey.thumbnail_url || "/default-bg.jpg"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -78,7 +80,6 @@ export default function SurveyDetail({ params }) {
           <h1 className="text-3xl lg:text-4xl font-bold text-gold mb-2">
             {survey.film_name}
           </h1>
-          {/* <p className="text-gray-300 text-lg">Survey ID: {survey.survey_id}</p> */}
         </div>
       </header>
 
@@ -88,7 +89,7 @@ export default function SurveyDetail({ params }) {
           className="relative w-full max-w-4xl bg-black rounded-lg shadow-lg overflow-hidden"
           style={{
             aspectRatio: "16/9",
-            maxHeight: "500px", // Limits height for vertical videos
+            maxHeight: "500px",
           }}
         >
           <video
@@ -99,19 +100,29 @@ export default function SurveyDetail({ params }) {
         </div>
       </section>
 
-      {/* Questions Section */}
+      {/* Questions Section (Dropdown) */}
       <section className="mt-10 px-6 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-gold mb-6">Questions</h2>
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {questions.map((q, index) => (
-            <li
-              key={index}
-              className="p-4 bg-[#7E1328] text-white rounded-lg shadow-md border border-gold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_5px_rgba(255,215,0,0.8)]"
-            >
-              <p className="text-md">{q.question__question_text}</p>
-            </li>
-          ))}
-        </ul>
+        <div
+          className="flex items-center justify-between cursor-pointer bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
+          onClick={() => setIsQuestionsVisible(!isQuestionsVisible)}
+        >
+          <h2 className="text-3xl font-bold text-gold">Questions</h2>
+          <span className="text-gold font-bold text-lg">
+            {isQuestionsVisible ? "-" : "+"}
+          </span>
+        </div>
+        {isQuestionsVisible && (
+          <ul className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {questions.map((q, index) => (
+              <li
+                key={index}
+                className="p-4 bg-[#7E1328] text-white rounded-lg shadow-md border border-gold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_5px_rgba(255,215,0,0.8)]"
+              >
+                <p className="text-md">{q.question__question_text}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Answers Section (Dropdown) */}
@@ -126,29 +137,50 @@ export default function SurveyDetail({ params }) {
           </span>
         </div>
         {isAnswersVisible && (
-          <ul className="mt-4 space-y-4 px-4">
-            {answers.map((a, index) => (
-              <li
-                key={index}
-                className="flex flex-col md:flex-row items-start md:items-center justify-between bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
-              >
-                <p className="text-gray-300 font-semibold md:w-1/2">
-                  {a.question__question_text}
-                </p>
-                <p className="text-white md:w-1/2 mt-2 md:mt-0">{a.answer}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-4">
+            <table className="w-full border-collapse border border-gray-700 bg-gray-800 rounded-lg">
+              <thead>
+                <tr>
+                  <th className="border border-gray-700 px-4 py-2 text-gold">
+                    Question
+                  </th>
+                  <th className="border border-gray-700 px-4 py-2 text-gold">
+                    Answer
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {answers.map((a, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-700 px-4 py-2 text-gray-300">
+                      {a.question__question_text}
+                    </td>
+                    <td className="border border-gray-700 px-4 py-2 text-gray-300">
+                      {a.answer}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
-      {/* Standard Answers Section */}
-      {/* Survey Insights Section */}
-      {/* Survey Insights Section */}
+
+      {/* Survey Insights Section (Dropdown) */}
+      {/* Survey Insights Section (Dropdown) */}
       <section className="mt-10 px-6 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-gold mb-6">Survey Insights</h2>
-        {surveyData.standard_answers.length > 0 ? (
-          <ul className="space-y-6">
-            {surveyData.standard_answers.map((answer, index) => (
+        <div
+          className="flex items-center justify-between cursor-pointer bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
+          onClick={() => setIsInsightsVisible(!isInsightsVisible)}
+        >
+          <h2 className="text-3xl font-bold text-gold">Survey Insights</h2>
+          <span className="text-gold font-bold text-lg">
+            {isInsightsVisible ? "-" : "+"}
+          </span>
+        </div>
+        {isInsightsVisible && (
+          <ul className="mt-6 space-y-6">
+            {standard_answers.map((answer, index) => (
               <li
                 key={index}
                 className="p-4 bg-gray-800 rounded-lg shadow-md border border-gray-700"
@@ -156,7 +188,6 @@ export default function SurveyDetail({ params }) {
                 <h3 className="text-lg font-semibold text-gold mb-3">
                   Insight {index + 1}
                 </h3>
-                {/* Mood Based on Video */}
                 <div className="mb-4">
                   <p className="text-gray-300 font-bold">
                     Mood Based on Video:
@@ -172,14 +203,12 @@ export default function SurveyDetail({ params }) {
                     ))}
                   </ul>
                 </div>
-                {/* Mood Based on Text */}
                 <div className="mb-4">
                   <p className="text-gray-300 font-bold">Mood Based on Text:</p>
                   <p className="text-gray-300 mt-1">
                     {answer.mood_based_on_text}
                   </p>
                 </div>
-                {/* Watch Likelihood */}
                 <div>
                   <p className="text-gray-300 font-bold">Watch Likelihood:</p>
                   <p className="text-gray-300 mt-1">
@@ -189,10 +218,6 @@ export default function SurveyDetail({ params }) {
               </li>
             ))}
           </ul>
-        ) : (
-          <p className="text-gray-400">
-            No insights available for this survey.
-          </p>
         )}
       </section>
     </main>

@@ -1,8 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function TrendingMovies() {
   const [movies, setMovies] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTrendingMovies = async () => {
@@ -20,6 +22,11 @@ export default function TrendingMovies() {
     fetchTrendingMovies();
   }, []);
 
+  
+  const movieSearch = (query) => {
+    router.push(`/moviesearch?query=${encodeURIComponent(query)}`)
+  };
+
   return (
     <div className="flex flex-col items-center justify-center py-10 bg-[#450a0a]">
       <div className="w-full">
@@ -28,7 +35,7 @@ export default function TrendingMovies() {
         </h2>
         <div className="flex overflow-x-auto scrollbar-hide space-x-6 px-4 py-8 overflow-visible">
           {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+            <MovieCard key={movie.id} movie={movie} movieSearch={movieSearch} />
           ))}
         </div>
       </div>
@@ -44,7 +51,7 @@ export default function TrendingMovies() {
   );
 }
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, movieSearch }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   return (
@@ -66,7 +73,7 @@ function MovieCard({ movie }) {
       </div>
       {/* Read More Button */}
       <button
-        onClick={() => setShowFullDescription(!showFullDescription)}
+        onClick={() => movieSearch(movie.title)}
         className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white font-semibold px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       >
         {showFullDescription ? "Show Less" : "Read More"}

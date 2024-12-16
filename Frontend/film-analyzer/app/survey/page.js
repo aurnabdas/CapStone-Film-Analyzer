@@ -467,7 +467,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
         {/* Display selected filename */}
         {filename && (
           <div className="text-center">
-            <p className="text-sm text-gray-800 mt-2">
+            <p className="text-sm text-#D4A03A mt-2">
               Selected file: <span className="font-semibold">{filename}</span>
             </p>
             <p className="text-sm text-green-600 mt-1">
@@ -479,7 +479,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
         {/* Display selected filename */}
         {thumbnailFile && (
           <div className="text-center">
-            <p className="text-sm text-gray-800 mt-2">
+            <p className="text-sm text-#D4A03A mt-2">
               Selected file: <span className="font-semibold">{thumbnailFile.name}</span>
             </p>
             <p className="text-sm text-green-600 mt-1">
@@ -490,7 +490,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
 
         {/* Movie Title Input */}
         <form className="w-full max-w-lg mb-4">
-          <label className="block text-lg mb-2 text-gray-800 text-[#D4A03A]">
+          <label className="block text-lg mb-2 text-#D4A03A text-[#D4A03A]">
             Movie Title:
             <input
               type="text"
@@ -524,7 +524,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
           >
             {/* Questions Input */}
             <form onSubmit={handleAddQuestion} className="w-full max-w-lg mb-6">
-              <label className="block text-lg mb-2 text-gray-800">
+              <label className="block text-lg mb-2 text-#D4A03A">
                 Questions:
                 <input
                   type="text"
@@ -536,13 +536,13 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
               </label>
               <button
                 type="submit"
-                className="w-full max-w-lg px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 transition"
+                className="w-full max-w-lg px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-red-800 transition"
               >
                 Add Question
               </button>
             </form>
 
-            <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            <h3 className="text-2xl font-semibold text-#D4A03A mb-4">
               Question Suggestions:
             </h3>
 
@@ -568,7 +568,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
               ))}
             </ul>
 
-            <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
+            <h3 className="text-lg font-semibold text-#D4A03A mt-4 mb-2">
               List of Questions
             </h3>
             <div className="w-full max-w-lg bg-white bg-opacity-80 p-4 rounded-lg shadow-md border-2 border-gray-300">

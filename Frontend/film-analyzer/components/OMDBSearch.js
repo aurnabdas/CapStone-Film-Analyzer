@@ -238,7 +238,7 @@ const OMDBSearch = () => {
                 </div>
                 {/* "View Details" Button on Hover */}
                 <button
-                  onClick={() => alert(`More info about ${recMovie.title}`)}
+                  onClick={() => handleSearch(recMovie.title)}
                   className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white font-semibold px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 >
                   View Details

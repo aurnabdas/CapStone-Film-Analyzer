@@ -351,13 +351,14 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
   return (
     <main
       className="min-h-screen bg-parchment text-gray-800 p-6 pt-20"
-      style={{ backgroundColor: "#f5f5dc", fontFamily: "Georgia, serif" }}
+      style={{ backgroundColor: '#450a0a', fontFamily: "Georgia, serif", color: '#D4A03A' }}
     >
       <NavBar />
 
       <div className="flex flex-col items-center mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         
-        <h1 className="text-4xl font-bold mb-6 text-red-800 border-b-2">
+        <h1 className="text-4xl font-bold mb-6 text-#D4A03A border-b-2">
+
           {isSubmitted ? `${movie}` : "Studio Survey Page"}
         </h1>
 
@@ -380,98 +381,88 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
 
         {preLoaded && (<>
 
-        {/* Thumbnail Display */}
-        <div className="flex flex-col items-center justify-center w-full mb-6">
-        {isSubmitted && thumbnailFile && (
-      <img
-        src={(thumbnailFile)} // Create a URL for the selected file
-        alt="Uploaded Thumbnail"
-        className="w-full max-w-xs h-auto object-cover mb-4"
-            />
-            )}
-        </div>
-
-        {/* File Upload Form */}
-        <div className="mt-10 mb-10 text-center">
-          <h2 className="text-2xl font-semibold mb-2 border-b-2 border-gray-300">
-            {isSubmitted
-              ? "Want to reupload another trailer?"
-              : "Upload trailer here"}
-          </h2>
-          <p className="text-xs text-gray-500">
-            File should be of format .mp4, .avi, .mov or .mkv
-          </p>
-        </div>
+{/* Flex Container for Horizontal Layout */}
+<div className="flex flex-row justify-center items-start space-x-10 mt-10 mb-10 w-full px-10">
+  {/* File Upload Form */}
+  <div className="w-1/2">
+    <div className="text-center mb-4">
+      <h2 className="text-2xl font-semibold mb-4 border-b-2 border-gray-300">
         
-        <form
-          action="#"
-          className="relative w-4/5 max-w-xs mb-10 bg-white p-4 rounded-lg shadow-lg"
+        {isSubmitted
+          ? "Want to reupload another trailer?"
+          : "Upload trailer here"}
+      </h2>
+    </div>
+    <form
+      action="#"
+      className="relative w-full h-64 bg-[#D4A03A] p-6 rounded-lg shadow-lg flex items-center justify-center border-4  hover:bg-yellow-300"
+    >
+      <input
+        type="file"
+        id="file-upload"
+        className="hidden"
+        onChange={handleFile}
+      />
+      <label
+        htmlFor="file-upload"
+        className="flex flex-col items-center cursor-pointer"
+      >
+        <p className="text-sm text-[#450a0a] mb-2">
+          <span className="text-xs text-[#450a0a]">
+            File should be of format .mp4, .avi, .mov, or .mkv
+          </span>
+        </p>
+        <svg
+          className="w-12 h-12 text-red-900"
+          fill="currentColor"
+          viewBox="0 0 20 20"
         >
-          <input
-            type="file"
-            id="file-upload"
-            className="hidden"
-            onChange={handleFile}
-          />
-          <label
-            htmlFor="file-upload"
-            className="flex flex-col items-center cursor-pointer"
-          >
-            <p className="text-sm text-gray-500 mb-2">
-              Drag & Drop or Select Files
-            </p>
+          <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+        </svg>
+      </label>
+    </form>
+  </div>
 
-            <svg
-              className="w-6 h-6 text-indigo-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
-            </svg>
-          </label>
-        </form>
-
-
-
-        <div className="mt-10 mb-10 text-center">
-          <h2 className="text-2xl font-semibold mb-2 border-b-2 border-gray-300">
-            {isSubmitted
-              ? "Want to reupload another thumbnail?"
-              : "Upload thumbnail here"}
-          </h2>
-          <p className="text-xs text-gray-500">
+  {/* Thumbnail Upload Form */}
+  <div className="w-1/2">
+    <div className="text-center mb-4">
+      <h2 className="text-2xl font-semibold mb-4 border-b-2 border-gray-300">
+        {isSubmitted
+          ? "Want to reupload another thumbnail?"
+          : "Upload thumbnail here"}
+      </h2>
+    </div>
+    <form
+      action="#"
+      className="relative w-full h-64 bg-[#D4A03A] p-6 rounded-lg shadow-lg flex items-center justify-center border-4  hover:bg-yellow-300"
+    >
+      <input
+        type="file"
+        id="trailer-file-upload"
+        className="hidden"
+        onChange={handleThumbnailFile}
+      />
+      <label
+        htmlFor="trailer-file-upload"
+        className="flex flex-col items-center cursor-pointer"
+      >
+        <p className="text-sm text-[#450a0a] mb-2">
+          <span className="text-xs text-[#450a0a]">
             File should be of format .pdf or .jpg
-          </p>
-        </div>
-
-      {/*Thumbnail upload*/}
-        <form
-          action="#"
-          className="relative w-4/5 max-w-xs mb-10 bg-white p-4 rounded-lg shadow-lg"
+          </span>
+        </p>
+        <svg
+          className="w-12 h-12 text-red-900"
+          fill="currentColor"
+          viewBox="0 0 20 20"
         >
-          <input
-            type="file"
-            id="trailer-file-upload"
-            className="hidden"
-            onChange={handleThumbnailFile}
-          />
-          <label
-            htmlFor="trailer-file-upload"
-            className="flex flex-col items-center cursor-pointer"
-          >
-            <p className="text-sm text-gray-500 mb-2">
-              Drag & Drop or Select Files
-            </p>
-            
-            <svg
-              className="w-6 h-6 text-indigo-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
-            </svg>
-          </label>
-        </form>
+          <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+        </svg>
+      </label>
+    </form>
+  </div>
+</div>
+
 
         {/* Display selected filename */}
         {filename && (
@@ -499,7 +490,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
 
         {/* Movie Title Input */}
         <form className="w-full max-w-lg mb-4">
-          <label className="block text-lg mb-2 text-gray-800">
+          <label className="block text-lg mb-2 text-gray-800 text-[#D4A03A]">
             Movie Title:
             <input
               type="text"
@@ -514,7 +505,7 @@ if (forceLoading || !isTimerDone || !isLoaded ) {
         {/* Submit Button */}
         <button
           onClick={handleUpload}
-          className="mb-6 px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 transition"
+          className="mb-6 px-4 py-2 bg-red-900 text-[#D4A03A] rounded-md hover:bg-red-700 transition"
         >
           Submit
         </button>

@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import NavBar from "./NavBar";
 
 const OMDBSearch = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [movie, setMovie] = useState(null);
   const [backdrop, setBackdrop] = useState("");
   const [overview, setOverview] = useState(""); // Overview from TMDB
   const [error, setError] = useState("");
-  const [showSearch, setShowSearch] = useState(true);
   const [recommendedMovies, setRecommendedMovies] = useState([]); // For recommended movies
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("query");
 
   const fetchRecommendedMovies = async (movieId) => {
     try {
@@ -34,8 +35,8 @@ const OMDBSearch = () => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
       setError("Please enter a movie name.");
       return;
     }
@@ -46,7 +47,7 @@ const OMDBSearch = () => {
       // Fetch backdrop and overview from TMDB
       const tmdbResponse = await fetch(
         `http://127.0.0.1:8000/myapis/search-movie?query=${encodeURIComponent(
-          searchQuery
+          query
         )}`
       );
 
@@ -74,7 +75,7 @@ const OMDBSearch = () => {
       // Fetch other movie details from OMDB
       const omdbResponse = await fetch(
         `http://127.0.0.1:8000/myapis/search-omdb-movie?query=${encodeURIComponent(
-          searchQuery
+          query
         )}`
       );
 
@@ -82,8 +83,9 @@ const OMDBSearch = () => {
         const omdbData = await omdbResponse.json();
         if (omdbData.movie) {
           setMovie(omdbData.movie); // Store movie details
-          setShowSearch(false); // Hide search bar after successful search
         } else {
+          console.log("No movie found in OMDB response.");
+
           setMovie(null);
           setError("No movie found for your search.");
         }
@@ -99,10 +101,16 @@ const OMDBSearch = () => {
     }
   };
 
+  useEffect(() => {
+    if (searchQuery){
+      handleSearch(searchQuery);
+    }
+  }, [searchQuery]);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-[60px]">
       <NavBar />
-      {/* Search Section */}
+      {/* Search Section
       {showSearch && (
         <div className="bg-black bg-opacity-80 text-white p-8 rounded-lg shadow-lg w-4/5 md:w-3/5 lg:w-2/5 mx-auto mt-10">
           <div className="text-center mb-4">
@@ -128,7 +136,7 @@ const OMDBSearch = () => {
           </div>
           {error && <p className="text-red-500">{error}</p>}
         </div>
-      )}
+      )} */}
 
       {/* Movie Details Section */}
       {movie && (

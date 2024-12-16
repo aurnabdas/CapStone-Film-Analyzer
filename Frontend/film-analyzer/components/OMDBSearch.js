@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import NavBar from "./NavBar";
+import Gif from '../components/Gif'
 
 const OMDBSearch = () => {
   const [movie, setMovie] = useState(null);
@@ -12,6 +13,7 @@ const OMDBSearch = () => {
   const [recommendedMovies, setRecommendedMovies] = useState([]); // For recommended movies
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("query");
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchRecommendedMovies = async (movieId) => {
     try {
@@ -40,7 +42,7 @@ const OMDBSearch = () => {
       setError("Please enter a movie name.");
       return;
     }
-
+    setIsLoading(true);
     setError("");
 
     try {
@@ -98,6 +100,10 @@ const OMDBSearch = () => {
       setOverview("");
       setMovie(null);
       setError("An error occurred while fetching movie details.");
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false); // Stop loading after GIF plays
+      }, 1000); // Simulate GIF duration
     }
   };
 
@@ -106,6 +112,28 @@ const OMDBSearch = () => {
       handleSearch(searchQuery);
     }
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setIsLoading(true); // Show GIF
+      const timer = setTimeout(() => {
+        handleSearch(searchQuery); // Fetch movie details
+        setIsLoading(false); // Hide GIF
+      }, 1000);
+
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+  }, [searchQuery]);
+
+  // Show loading GIF while the content is not ready
+  if (isLoading) {
+    return (
+      <Gif
+        gifSource="/gifs/KlapperIcon.gif"
+        backgroundColor="rgb(153 27 27)"
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-[60px]">

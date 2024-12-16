@@ -1,12 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Gif from "../../components/Gif";
-import "../styles/summarystyles.css";
-import gif from "../../public/gifs/KlapperIcon.gif"
-
 
 export default function Summary() {
   const [username, setUsername] = useState("");
@@ -53,84 +51,80 @@ export default function Summary() {
   };
 
   useEffect(() => {
-        
     const timer = setTimeout(() => {
-    console.log("Timer done!");
       setIsTimerDone(true);
       setForceLoading(false);
-    }, 2000); 
+    }, 2000);
 
-    
     return () => clearTimeout(timer);
   }, []);
 
-  
-
-if (forceLoading || !isTimerDone || !isLoaded ) {
-    return <Gif
-    gifSource= "/gifs/KlapperIcon.gif"
-    backgroundColor="rgb(153 27 27)"
-    
-  />;
+  if (forceLoading || !isTimerDone || !isLoaded) {
+    return (
+      <Gif gifSource="/gifs/KlapperIcon.gif" backgroundColor="rgb(153 27 27)" />
+    );
   }
+
   return (
-    <main
-      className="min-h-screen bg-parchment text-gray-800 p-6 pt-20"
-      style={{ backgroundColor: "#180009", fontFamily: "Georgia, serif" }}
-    >
+    <main className="min-h-screen bg-gray-900 text-white pt-[60px]">
       <NavBar />
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-1 mt-8">
+      <header className="text-center py-6">
+        <h1 className="text-4xl font-bold text-gold">Completed Surveys</h1>
+        <p className="text-gray-400 text-sm mt-2">
+          View your completed surveys and details.
+        </p>
+      </header>
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {surveys.length > 0 ? (
           surveys.map((survey, index) => (
             <div
               key={index}
-              className="card"
+              className="relative flex-none w-64 bg-[#7E1328] shadow-lg rounded-lg overflow-hidden border border-gold group transition-all duration-300 transform hover:scale-110 hover:translate-y-[-5px] hover:bg-transparent"
             >
-              {/* Thumbnail or Video */}
-              <div className="relative">
+              {/* Thumbnail or Trailer */}
+              <div className="relative w-full h-48 overflow-hidden">
                 <img
-                  className="picture"
-                  src={survey.survey.thumbnail_url || "/path/to/default-thumbnail.jpg"}
+                  className="w-full h-full object-cover"
+                  src={
+                    survey.survey.thumbnail_url ||
+                    "/path/to/default-thumbnail.jpg"
+                  }
                   alt={`Thumbnail for ${survey.survey.film_name}`}
                 />
                 <video
-                  className="vid"
+                  className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   src={survey.survey.video_url}
                   muted
-                  autoPlay
                   loop
                   playsInline
-                  onMouseEnter={(e) => {
-                    e.target.muted = false; // Unmute video on hover
-                    e.target.play(); // Play video on hover
-                  }}
+                  onMouseEnter={(e) => e.target.play()}
                   onMouseLeave={(e) => {
-                    e.target.muted = true; // Mute video when not hovered
-                    e.target.currentTime = 0; // Reset video to the beginning
-                    e.target.pause(); // Pause video when not hovered
-
+                    e.target.pause();
+                    e.target.currentTime = 0;
                   }}
                 ></video>
               </div>
 
-              {/* Survey Details (hidden by default, shown on hover) */}
-              <div className="details">
-                <h3 className="text-lg font-semibold text-white-800">
+              {/* Survey Details */}
+              <div className="p-4 text-white">
+                <h3 className="text-lg font-bold text-gold truncate">
                   <a href={`/survey/${survey.survey.survey_id}`}>
                     {survey.survey.film_name}
                   </a>
                 </h3>
-                <p className="text-gray-600">
-                  Survey ID: {survey.survey.survey_id}
+                <p className="text-gray-300 text-sm mt-2">
+                  <strong>Survey ID:</strong> {survey.survey.survey_id}
                 </p>
-                <p className="text-gray-600">
-                   Responses: {survey.response_count}
+                <p className="text-gray-300 text-sm">
+                  <strong>Responses:</strong> {survey.response_count}
                 </p>
               </div>
             </div>
           ))
         ) : (
-          <p>No surveys found for this user.</p>
+          <p className="text-center text-gray-400">
+            No surveys found for this user.
+          </p>
         )}
       </section>
     </main>

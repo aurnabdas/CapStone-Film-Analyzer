@@ -20,7 +20,7 @@ api = NinjaAPI()
 
 @api.get("/hello")
 def hello(request):
-    print(request)
+    # print(request)
     return {"message": "Hello Word"}
 
 
@@ -99,27 +99,31 @@ def users(request):
 def users(request):
     body = request.body.decode('utf-8')
     email = json.loads(body)
+    if User.objects.filter(username=email).exists():
+        return {"message": "Cannot create user. Email already exists."}
     User.objects.create(username= email, role = "reviewer")
-    print(email)
+    
     return {"message": "Success"}
 
 @api.post("/users/studio/{email}")
 def users(request, email: str):
-    query = {"username": email, "role": "reviewer"}
+    
+    if User.objects.filter(username=email).exists():
+        return {"message": "Cannot create user. Email already exists."}
     User.objects.create(username= email, role = "studio")
-    print(email)
+    
     return {"message": "Success"}
 
 @api.post("/rolecheck")
 def rolecheck(request):
     
     body = json.loads(request.body.decode('utf-8'))
-    print(body)
+    # print(body)
     user_id = body.get("userID")
-    print(user_id)
+    # print(user_id)
     try:
         user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
-        print(user.role)
+        
         if user.role == "reviewer":
             return JsonResponse({"message": "Incorrect Role"}, status=400)
     except User.DoesNotExist:
@@ -131,12 +135,12 @@ def rolecheck(request):
 def rolecheck(request):
     
     body = json.loads(request.body.decode('utf-8'))
-    print(body)
+    # print(body)
     user_id = body.get("userID")
-    print(user_id)
+    # print(user_id)
     try:
         user = User.objects.get(username=user_id)  # Retrieve the User instance using `user_id`
-        print(user.role)
+        
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
     
@@ -177,7 +181,7 @@ def create_survey_entry(request):
     )
 
     # Print to verify (for debugging purposes, remove this in production)
-    print(f"User ID: {user.user_id}, Film Name: {film_name}, Video URL: {video_url}, Thumbnail URL: {thumbnail_url}")
+    # print(f"User ID: {user.user_id}, Film Name: {film_name}, Video URL: {video_url}, Thumbnail URL: {thumbnail_url}")
 
     return JsonResponse({"message": "Survey Entry Created", "data": body}, status=201)
 # PATCH request to update survey response count. SurveyID must exist in Survey Table.
@@ -197,7 +201,7 @@ def update_survey_response_count(request, survey_id):
         response_count_entry.save()
 
         # Print to verify (for debugging purposes, remove this in production)
-        print(f"Survey ID: {survey.survey_id}, Updated Response Count: {response_count_entry.response_count}")
+        # print(f"Survey ID: {survey.survey_id}, Updated Response Count: {response_count_entry.response_count}")
 
         return JsonResponse(
             {"message": "Survey response count updated successfully", "new_count": response_count_entry.response_count},
@@ -261,7 +265,7 @@ def get_survey_by_id(request, survey_id: int):
 @api.get("/user-surveys")
 def get_user_surveys(request):
     username = request.headers.get("username")  # Assuming the username is passed via headers
-    print("Received username:", username)  # Add this for debugging
+    # print("Received username:", username)  # Add this for debugging
     
     try:
         user = User.objects.get(username=username)
@@ -288,7 +292,7 @@ def get_user_surveys(request):
 @api.post("/custom-question-answers")
 def create_custom_question_answer(request):
     body = json.loads(request.body.decode('utf-8'))
-    print(body)
+    # print(body)
 
     userName = body.get("userName")
     question = body.get("question")
@@ -301,10 +305,10 @@ def create_custom_question_answer(request):
     survey = survey_question.survey  
 
     # for developer to quicky check what is being put into the database
-    print(user.user_id)
-    print(question.question_id)
-    print(survey.survey_id)
-    print(answer)
+    # print(user.user_id)
+    # print(question.question_id)
+    # print(survey.survey_id)
+    # print(answer)
 
     # Checks if the answer is blank
     if not answer.strip():
@@ -386,7 +390,7 @@ def delete_custom_question_answer(request, user_id: int, survey_id: int, questio
 @api.post("/questions")
 def create_question(request):
     body = json.loads(request.body.decode('utf-8'))
-    print(body)
+    # print(body)
     question_text = body.get("question")
     user_ID = body.get("userID")
     movie = body.get("movie")
@@ -500,9 +504,9 @@ def create_standard_question_answer(request):
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
     
-    print(mood_based_on_video)
-    print(mood_based_on_text)
-    print(watch_likelihood)
+    # print(mood_based_on_video)
+    # print(mood_based_on_text)
+    # print(watch_likelihood)
     # Create StandardQuestionAnswer entry
     standard_answer = StandardQuestionAnswer.objects.create(
         user=user,
